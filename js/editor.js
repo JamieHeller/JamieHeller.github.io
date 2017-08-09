@@ -758,8 +758,14 @@ function createEditor() {
 
   // Enable the listeners
   d3.select(window)
-    .onKey('backspace/del', removeObject);
+    .onKey('backspace/del', removeObject)
+    .on('touchstart', nozoom)
+    .on('touchmove', nozoom)
 
+  // This function is used to allow touch screens to interact with the flow network
+  function nozoom() {
+     d3.event.preventDefault();
+  } // end nozoom
  
   //----------------------- 
   // Start the force graph 
