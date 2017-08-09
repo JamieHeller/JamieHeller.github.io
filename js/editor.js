@@ -770,9 +770,9 @@ function createEditor() {
   //-----------------------
   svg.on('mousedown', mousedown)
      .on('mousemove', mousemove)
-     .on('mouseup', mouseup)
-     .on('touchstart', nozoom)
-     .on('touchmove', nozoom);
+     .on('touchstart', mousedown)
+     .on('touchmove', mousemove)
+     .on('mouseup', mouseup);
 
   d3.select(window)
      .on('keydown', keydown)
