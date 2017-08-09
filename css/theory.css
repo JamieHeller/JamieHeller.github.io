@@ -1,0 +1,16 @@
+
+.theorem {
+  background-color: #FFF;
+  cursor: default;
+  border: solid;
+  border-width: 1px;
+}
+
+.math {
+  text-align: center;
+}
+
+.svg-container {
+  text-align: center;
+}
+

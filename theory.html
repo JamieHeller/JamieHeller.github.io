@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Network Flow Theory using Edmonds-Karp Algorithm</title>
+    <link rel="stylesheet" href="css/edmonds_karp.css">
+    <link rel="stylesheet" href="css/toc.css">
+    <link rel="stylesheet" href="css/theory.css">
+
+  </head>
+  <body>
+     <nav class="dropdownmenu">
+       <ul>
+         <li><a href="editor.html">Visualization</a></li>
+         <li><a href="theory.html">Theory</a></li>
+         <li><a href="resources.html">Resources</a></li>
+         <li><a href="about.html">About</a></li>
+       </ul>
+     </nav>
+
+     <div class="container">
+        <div class="top" >&nbsp;
+           <h1 align="center">Edmonds-Karp Algorithm</h1>
+           <h2 align="center">Theory</h2>
+       </div>
+       <div class="content" id="theory">
+         <article>
+            <div class="algorithm-topics">
+               <h3 id="introduction">Introduction</h3>
+               <p>The Edmonds-Karp Algorithm is a modified version of the Ford-Fulkerson algorithm.  
+                  Its purpose is to compute the maximum flow in a flow network.  The algorithm was
+                  published by Jack Edmonds and Richard Karp in 1972 in the paper entitle:</p>
+                  <a href="http://dx.doi.org/10.1145/321694.321699">
+                    <em>Edmonds, Jack; Karp, Richard M. (1972). "Theoretical improvements in algorithmic efficiency for network flow problems". Journal of the ACM. Association for Computing Machinery. 19 (2): 248–264. doi:10.1145/321694.321699.</em></a>
+                  <p>The Edmonds-Karp Algorithm has a time complexity of: 
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mrow>
+                      <mi>O</mi><mfenced>
+				
+                      <msup><mi>V</mi><mn>2</mn></msup>
+                      <mi>E</mi></mfenced> 
+                    </mrow>
+                  </math>
+               </p>
+
+               <h3 id="flownetworks">Flow Network</h3>
+               <p>A <strong>Flow Network</strong> is a directed graph, where each edge has a maximum flow <strong>capacity</strong>. 
+                  Each edge can receive some amount of flow as long as that flow is less than or equal to that edge's capacity. 
+                  The vertices in a flow network are called <strong>nodes</strong>.  The edges are called <strong>links</strong> or <strong>arcs</strong>. 
+                  Every flow network contains a <strong>source</strong> and <strong>sink</strong> node.  A <strong>source</strong> node only contains outgoing 
+                  links to the network and can be thought of as having an infinite supply.  A <strong>sink</strong> node's flow output is only limited by the network.
+                  With the exception for source and sink nodes, the amount of flow entering a node must equal the amount of flow leaving the node. 
+               </p>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mo>&#x2211;<!-- ∑ --></mo>
+                         <mrow class="MJX-TeXAtom-ORD">
+                           <mi>i</mi>
+                           <mi>n</mi>
+                           <mi>p</mi>
+                           <mi>u</mi>
+                           <mi>t</mi>
+                         </mrow>
+                         <mo>=</mo>
+                         <mo>&#x2211;<!-- ∑ --></mo>
+                         <mrow class="MJX-TeXAtom-ORD">
+                           <mi>o</mi>
+                           <mi>u</mi>
+                           <mi>t</mi>
+                           <mi>p</mi>
+                           <mi>u</mi>
+                           <mi>t</mi>
+                         </mrow>
+                       </mrow>
+                     </mstyle>
+                  </math>
+               </div>
+
+               <p><strong>The Flow Network Problem:</strong></p>
+               <p>We are given:
+                  <ul>
+                     <li>A directed graph with each edge </li>
+                     <li>Edges with capacity limits</li>
+                  </ul>
+               </p>
+               <p><strong>Goal:</strong> We want to find the actual flow through the network so that we maximize the output at the sink node.</p>
+               <div class="math">
+                  <p>Flow Valve = 
+                     <math xmlns="http://www.w3.org/1998/Math/MathML">
+                       <mstyle displaystyle="true">
+                         <mrow class="MJX-TeXAtom-ORD">
+                           <munder>
+                             <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
+                             <mrow class="MJX-TeXAtom-ORD">
+                               <mi>a</mi>
+                               <mi>l</mi>
+                               <mi>l</mi>
+                               <mtext>&#xA0;</mtext>
+                               <mi>v</mi>
+                             </mrow>
+                           </munder>
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <mi>f</mi>
+                             <mrow>
+                               <mo>(</mo>
+                               <mi>S</mi>
+                               <mo>,</mo>
+                               <mi>v</mi>
+                               <mo>)</mo>
+                             </mrow>
+                           </mrow>
+                           <mo>=</mo>
+                           <munder>
+                             <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
+                             <mrow class="MJX-TeXAtom-ORD">
+                               <mi>a</mi>
+                               <mi>l</mi>
+                               <mi>l</mi>
+                               <mtext>&#xA0;</mtext>
+                               <mi>v</mi>
+                             </mrow>
+                           </munder>
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <mi>f</mi>
+                             <mrow>
+                               <mo>(</mo>
+                               <mi>v</mi>
+                               <mo>,</mo>
+                               <mi>T</mi>
+                               <mo>)</mo>
+                             </mrow>
+                           </mrow>
+                         </mrow>
+                       </mstyle>
+                     </math>
+                   </p> 
+               </div>
+
+               <p><strong>Our constraints</strong></p>
+               <p>The flow through an edge is limited by the edge's capacity constraint:</p>
+
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>L</mi>
+                        <mi>e</mi>
+                        <mi>t</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>c</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>x</mi>
+                          <mo>,</mo>
+                          <mi>y</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>=</mo>
+                        <mi>c</mi>
+                        <mi>a</mi>
+                        <mi>p</mi>
+                        <mi>a</mi>
+                        <mi>c</mi>
+                        <mi>i</mi>
+                        <mi>t</mi>
+                        <mi>y</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>o</mi>
+                        <mi>f</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>e</mi>
+                        <mi>d</mi>
+                        <mi>g</mi>
+                        <mi>e</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <mover>
+                            <mrow>
+                              <mi>x</mi>
+                              <mi>y</mi>
+                            </mrow>
+                            <mo stretchy="false">&#x2192;<!-- → --></mo>
+                          </mover>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <br>
+ 
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>L</mi>
+                        <mi>e</mi>
+                        <mi>t</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>f</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>x</mi>
+                          <mo>,</mo>
+                          <mi>y</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>=</mo>
+                        <mi>a</mi>
+                        <mi>c</mi>
+                        <mi>t</mi>
+                        <mi>u</mi>
+                        <mi>a</mi>
+                        <mi>l</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>f</mi>
+                        <mi>l</mi>
+                        <mi>o</mi>
+                        <mi>w</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>i</mi>
+                        <mi>n</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mi>e</mi>
+                        <mi>d</mi>
+                        <mi>g</mi>
+                        <mi>e</mi>
+                        <mtext>&#xA0;</mtext>
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <mover>
+                            <mrow>
+                              <mi>x</mi>
+                              <mi>y</mi>
+                            </mrow>
+                            <mo stretchy="false">&#x2192;<!-- → --></mo>
+                          </mover>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <br>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mn>0</mn>
+                        <mo>&#x2264;<!-- ≤ --></mo>
+                        <mi>f</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>x</mi>
+                          <mo>,</mo>
+                          <mi>y</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>&#x2264;<!-- ≤ --></mo>
+                        <mi>c</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>x</mi>
+                          <mo>,</mo>
+                          <mi>y</mi>
+                          <mo>)</mo>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+            
+               <p>Flow conservation:</p>
+               <div class="math">
+                  <p> For all
+                      <math xmlns="http://www.w3.org/1998/Math/MathML">
+                         <mstyle displaystyle="true">
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <mi>u</mi>
+                             <mo>&#x2260;<!-- ≠ --></mo>
+                             <mi>S</mi>
+                             <mo>,</mo>
+                             <mi>T</mi>
+                           </mrow>
+                         </mstyle>
+                       </math> 
+                       <math xmlns="http://www.w3.org/1998/Math/MathML">
+                         <mstyle displaystyle="true">
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <munder>
+                               <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
+                               <mrow class="MJX-TeXAtom-ORD">
+                                 <mi>a</mi>
+                                 <mi>l</mi>
+                                 <mi>l</mi>
+                                 <mtext>&#xA0;</mtext>
+                                 <mi>v</mi>
+                               </mrow>
+                             </munder>
+                             <mrow class="MJX-TeXAtom-ORD">
+                               <mi>f</mi>
+                               <mrow>
+                                 <mo>(</mo>
+                                 <mi>v</mi>
+                                 <mo>,</mo>
+                                 <mi>u</mi>
+                                 <mo>)</mo>
+                               </mrow>
+                             </mrow>
+                             <mo>=</mo>
+                             <munder>
+                               <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
+                               <mrow class="MJX-TeXAtom-ORD">
+                                 <mi>a</mi>
+                                 <mi>l</mi>
+                                 <mi>l</mi>
+                                 <mtext>&#xA0;</mtext>
+                                 <mi>v</mi>
+                               </mrow>
+                             </munder>
+                             <mrow class="MJX-TeXAtom-ORD">
+                               <mi>f</mi>
+                               <mrow>
+                                 <mo>(</mo>
+                                 <mi>u</mi>
+                                 <mo>,</mo>
+                                 <mi>v</mi>
+                                 <mo>)</mo>
+                               </mrow>
+                             </mrow>
+                           </mrow>
+                         </mstyle>
+                       </math>
+                   </p>
+               </div>
+
+               <p><strong>Simplify</strong></p>
+               <p><em>Cycles:</em> If a cycle has flow on all edges, then we can get an equivalent solution with
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mo>&#x2265;<!-- ≥ --></mo>
+                      </mrow>
+                    </mstyle>
+                  </math> 
+                 edges having zero flow.  Why send product (flow) in a cycle with positive flow.<br>
+                 Notice: Any edge
+                 <math xmlns="http://www.w3.org/1998/Math/MathML">
+                   <mstyle displaystyle="true">
+                     <mrow class="MJX-TeXAtom-ORD">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mover>
+                           <mrow>
+                             <mi>v</mi>
+                             <mi>S</mi>
+                           </mrow>
+                           <mo stretchy="false">&#x2192;<!-- → --></mo>
+                         </mover>
+                       </mrow>
+                     </mrow>
+                   </mstyle>
+                 </math>
+                 must be part of a cycle.  Any solution has an equivalent with
+                 <math xmlns="http://www.w3.org/1998/Math/MathML">
+                   <mstyle displaystyle="true">
+                     <mrow class="MJX-TeXAtom-ORD">
+                       <mi>f</mi>
+                       <mrow>
+                         <mo>(</mo>
+                         <mi>v</mi>
+                         <mo>,</mo>
+                         <mi>S</mi>
+                         <mo>)</mo>
+                       </mrow>
+                       <mo>=</mo>
+                       <mn>0</mn>
+                     </mrow>
+                   </mstyle>
+                 </math> 
+               </p>
+
+               <p><em>Sinks:</em> Any vertex, other than our target sink node, which contain <strong>only</strong> incoming edges can be removed.
+                  In this circumstance flow would never make it to the target node.
+               </p>
+
+
+               <h3 id="applications">Applications</h3>
+               <p>Some applications where it is desirable to find the maximum flow through a network are:
+                  <ul>
+                     <li>Modeling traffic in a road system</li>
+                     <li>Fluids in pipes</li>
+                     <li>Currents flowing through an electical circuit</li>
+                  </ul>
+               </p>
+
+
+               <h3 id="maxflowmincut">Maximum Flow and Minimum Cut</h3>
+               <strong>Theorem</strong>
+               <div class="theorem">
+                 <p>
+                 <a href=https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem>maximum-flow minimum-cut theorem</a> states that The maximum flow through 
+                 any network from a given source to a given sink is exactly the sum of the edge weights that, if removed, would totally disconnect the 
+                 source from the sink.</p> 
+               </div>
+
+               <br><strong>So what is a flow?</strong>
+               <p>A flow can be anything.
+               <ul>
+                 <li>It could be data that passes through an Information Technology (IT) network.</li> 
+                 <li>It could be packages that need to be shipped from source to destination.</li>
+                 <li>It could be automobiles traveling through a network of roads.</li>
+               </ul>
+               </p>
+
+               <strong>What does a Network Flow Diagram look like?</strong>
+               <p>The simplest of all Network Flow Diagram appears in the figure below.  There exists two nodes, a source node, labeled s, and a 
+                  sink node, labeled t.  The source and sink nodes are connected by a single edge.  The edge is labeled with the flow rate on that edge 
+                  and the maximum flow capacity allowed across that edge.  In this example, the flow rate is 0 and the maximum capacity of the link is 1 and is
+                   represented in the form 0/1.
+               </p>
+ 
+               <!-- Figure 1 -->
+               <div class="svg-container">
+                 <svg height="160" width="580" class="editor">
+                   <defs>
+                      <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                         <path d="M0,-5L10,0L0,5"> </path>
+                      </marker>
+                   </defs>
+                     <path style="" d="M58,80L527,81.19999694824219" class="link dragline hidden"></path>
+                     <g>
+                        <g class="link">
+                          <path d="M70,80L505,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="10" class="link"> </path>
+                          <path d="M70,80L505,80" class="halo"></path>
+                          <text><textPath startOffset="50%" xlink:href="#10"><tspan dy="-5">0 / 1</tspan></textPath></text>
+                        </g>
+                        <g class="link">
+                          <path d="M400,40L400,120" id="11" class="link"></path>
+                          <path d="M400,40L400,120" class="halo"></path>
+                          <text><textPath startOffset="30%" xlink:href="#11"><tspan dy="-5">Cut</tspan></textPath></text>
+                        </g>
+                     </g>
+                     <g>
+                       <g transform="translate(58,80)" class="node">
+                          <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                          <text class="id" y="4">s</text>
+                       </g>
+                       <g transform="translate(522,80)" class="node">
+                          <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                          <text class="id" y="4">t</text>
+                       </g>
+                    </g>
+                  </svg>
+               </div>
+             
+               <p>In this Network Flow Diagram, there exists only one edge with a capacity of 1 from the source node to the target node.
+                  The maximum flow is equal to the minimum cut through the Flow Network, which can easily be seen to have a value of 1.
+               </p>
+
+               <p>The next simple example adds a node in between the source and target with no direct link from source to target.  This means the
+                  the flow must travel through this node to get to the target.  We can then demonstrate the minimum cut is still 1 in this example since
+                  the edge from a to t produces the smallest cut that separates the source from the target.
+
+               <!-- Figure 2 -->
+               <div class="svg-container">
+                 <svg height="160" width="580" class="editor">
+                   <defs>
+                     <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                        <path d="M0,-5L10,0L0,5"></path></marker>
+                   </defs>
+                   <path style="" d="M290,80L290,80" class="link dragline hidden"></path>
+                   <g>
+                     <!-- Link from s to a -->
+                     <g class="link">
+                       <path d="M70,80L275,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="20" class="link"></path>
+                       <path d="M70,80L275,80" class="halo"></path>
+                       <text><textPath startOffset="50%" xlink:href="#20"><tspan dy="-5">0 / 2</tspan></textPath></text>
+                     </g>
+                     <!-- Link from a to t -->
+                     <g class="link">
+                       <path d="M300,80L505,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="21" class="link"></path>
+                       <path d="M300,80L505,80" class="halo"></path>
+                       <text><textPath startOffset="50%" xlink:href="#21"><tspan dy="-5">0 / 1</tspan></textPath></text>
+                     </g>
+                     <!-- The smallest cut -->
+                     <g class="link">
+                       <path d="M450,40L450,120" id="22" class="link"></path>
+                       <path d="M450,40L4500,120" class="halo"></path>
+                       <text><textPath startOffset="30%" xlink:href="#22"><tspan dy="-5">Cut</tspan></textPath></text>
+                     </g>
+                   </g>
+                   <g>
+                     <g transform="translate(58,80)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">s</text>
+                     </g>
+                     <g transform="translate(522,80)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">t</text>
+                     </g>
+                     <g transform="translate(290,80)" class="node">
+                        <circle style="fill: rgb(255, 152, 150); stroke: rgb(178, 106, 105);" r="12"></circle>
+                        <text class="id" y="4">a</text>
+                     </g>
+                   </g>
+                 </svg>
+               </div>
+               
+               <p>A s-t cut partitions the vertices, V, of a graph into two sets, S and T, where the source node 
+               <span class="texhtml"><i>s</i> ∈ <i>S</i></span> and the sink or target node <span class="texhtml"><i>t</i> ∈ <i>T</i></span>.
+               Furthermore the the cut set contains all edges that cross from a node in set S to a node in set T.  A <strong>minimum cut-set</strong>
+               is a s-t cut whose capacity is minimal.</p>
+               
+               <p><strong>Proof:</strong></p>
+               <p> Let G = (V, E) be a directed graph with s=source node and t=sink node of G respectively.</p>
+               <p> Now consider the calculated flow=f for G by Edmonds-Karp Algorithm.  In the residual graph (rG) that is calculated from G after the
+                   final flow assignment is generated by the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
+                   <ol> 
+                      <li> A: the set of vertices reachable from s in rG </li>
+                      <li> B: the set of remaining vertices.  In other words, B = V − A </li>
+                   </ol>
+               </p>
+               <p><strong>Claim:</strong> f = c(A, B), where the flow is equal to the capacity of the s-t cut.</p>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>c</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>S</mi>
+                          <mo>,</mo>
+                          <mi>T</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>=</mo>
+                        <munder>
+                          <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <mrow>
+                              <mo>(</mo>
+                              <mi>u</mi>
+                              <mo>,</mo>
+                              <mi>v</mi>
+                              <mo>)</mo>
+                            </mrow>
+                            <mo>&#x2208;<!-- ∈ --></mo>
+                            <mi>S</mi>
+                            <mi>x</mi>
+                            <mi>T</mi>
+                          </mrow>
+                        </munder>
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <msub>
+                            <mi>c</mi>
+                            <mrow class="MJX-TeXAtom-ORD">
+                              <mi>u</mi>
+                              <mi>v</mi>
+                            </mrow>
+                          </msub>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <p>Given that the flow out from the subset A - flow in from the subset A equals the flow for any subset of vertices, A.  We need the value of
+                  f = c(A, B) to be:
+                  <ul>
+                      <li> All outgoing edges from the cut to be fully saturated. </li>
+                      <li> All incoming edges to the cut to have zero flow. </li>
+                  </ul>
+               </p>
+               <p>Let's consider the following cases:
+                  <ul>
+                     <li>In graph G, there exists an outgoing edge (x,y) and x is a member of subset A and y is a member of subset B.  Let this edge not be saturated.
+                         If this is the case, then there must exist a <strong>forward edge</strong> from x to y in rG.  This implies there is a path from s to y in rG,
+                         which is a <strong>contradiction</strong>.  Therefore, all outgoing edges are fully saturated.
+                     </li>
+                     <li>In graph G, there exists an incoming edge (y,x) and x is a member of subset A and y is a member of subset B.  Let this edge carry some
+                          non-zero flow.  If this is the case, then ther must exist a <strong>backward edge</strong> from x to y in rG.  This implies there is a
+                          path from s to y in rG, which is a <strong>contradiction</strong>.  Therefore, all incoming edges must have zero flow.
+                     </li>
+                  </ul>
+                  <strong>In conclusion:</strong> The capacity of the cut obtained from the description above is equal to the flow obtained in the network. 
+               </p>
+           
+               <h3 id="residualgraph">Residual Graph</h3>
+               <p>The residual graph is a tool used in the maximum flow calculations that helps us determine how much you can change in the original graph.
+                  The following diagram represents the graph at a specific iteration of the maximum flow algorithm. </p>
+
+               <div class="svg-container">
+                 <svg height="200" width="500" class="editor">
+                   <defs>
+                      <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                         <path d="M0,-5L10,0L0,5"> </path>
+                      </marker>
+                   </defs>
+                   <path style="" d="M58,80L527,80" class="link dragline hidden"></path>
+                   <g>
+                      <!-- edge s-v1 -->
+                      <g class="link">
+                        <path d="M20,100L140,30" style="marker-end: url(&quot;#end-arrow&quot;);" id="31" class="link"> </path>
+                        <path d="M20,100L140,30" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#31"><tspan dy="-5">11 / 16</tspan></textPath></text>
+                      </g>
+                      <!-- edge s-v2 -->
+                      <g class="link">
+                        <path d="M20,100L135,165" style="marker-end: url(&quot;#end-arrow&quot;);" id="32" class="link"> </path>
+                        <path d="M20,100L135,165" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#32"><tspan dy="-5">8 / 13</tspan></textPath></text>
+                      </g>
+                      <!-- edge v1-v3 -->
+                      <g class="link">
+                        <path d="M160,20L305,20" style="marker-end: url(&quot;#end-arrow&quot;);" id="33" class="link"> </path>
+                        <path d="M160,20L305,20" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#33"><tspan dy="-5">12 / 12</tspan></textPath></text>
+                      </g>
+                      <!-- edge v2-v4 -->
+                      <g class="link">
+                        <path d="M160,170L305,170" style="marker-end: url(&quot;#end-arrow&quot;);" id="34" class="link"> </path>
+                        <path d="M160,170L305,170" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#34"><tspan dy="-5">11 / 14</tspan></textPath></text>
+                      </g>
+                      <!-- edge v2-v1 -->
+                      <g class="link">
+                        <path d="M150,170L150,35" style="marker-end: url(&quot;#end-arrow&quot;);" id="35" class="link"> </path>
+                        <path d="M150,170L150,35" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#35"><tspan dy="-5">1 / 4</tspan></textPath></text>
+                      </g>
+                      <!-- edge v4-v3 -->
+                      <g class="link">
+                        <path d="M320,170L320,35" style="marker-end: url(&quot;#end-arrow&quot;);" id="36" class="link"> </path>
+                        <path d="M320,170L320,35" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#36"><tspan dy="-5">7 / 7</tspan></textPath></text>
+                      </g>
+                      <!-- edge v3-v2 -->
+                      <g class="link">
+                        <path d="M320,20L160,160" style="marker-end: url(&quot;#end-arrow&quot;);" id="37" class="link"> </path>
+                        <path d="M320,20L160,160" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#37"><tspan dy="-5">4 / 9</tspan></textPath></text>
+                      </g>
+                      <!-- edge v3-t -->
+                      <g class="link">
+                        <path d="M332,25L465,95" style="marker-end: url(&quot;#end-arrow&quot;);" id="38" class="link"> </path>
+                        <path d="M332,25L465,95" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#38"><tspan dy="-5">15 / 20</tspan></textPath></text>
+                      </g>
+                      <!-- edge v4-t -->
+                      <g class="link">
+                        <path d="M332,165L465,105" style="marker-end: url(&quot;#end-arrow&quot;);" id="39" class="link"> </path>
+                        <path d="M332,165L465,105" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#39"><tspan dy="-5">4 / 4</tspan></textPath></text>
+                      </g>
+                   </g>
+                   <g>
+                     <!-- Source Node -->
+                     <g transform="translate(20,100)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">s</text>
+                     </g>
+                     <!-- Target Node -->
+                     <g transform="translate(480,100)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">t</text>
+                     </g>
+                     <!-- v1 Node -->
+                     <g transform="translate(150,20)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v1</text>
+                     </g>
+                     <!-- v2 Node -->
+                     <g transform="translate(150,170)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v2</text>
+                     </g>
+                     <!-- v3 Node -->
+                     <g transform="translate(320,20)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v3</text>
+                     </g>
+                     <!-- v4 Node -->
+                     <g transform="translate(320,170)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v4</text>
+                     </g>
+                   </g>
+                 </svg>
+               </div>
+
+               <p>The residual graph is constructed by creating a new graph with identical edges to the original graph.  The weights on the edges in 
+                  this graph represent the residual capacity available on each edge at the current instance of time during the maximum flow calculations.
+                  The residual flow is simply the edge capacity - the edge flow.  Edges with an edge capcity equal to 0 can be elimnated from the graph.
+                </p>
+
+               <div class="svg-container">
+                 <svg height="200" width="500" class="editor">
+                   <defs>
+                      <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                         <path d="M0,-5L10,0L0,5"> </path>
+                      </marker>
+                   </defs>
+                   <path style="" d="M58,80L527,80" class="link dragline hidden"></path>
+                   <g>
+                      <!-- edge s-v1 -->
+                      <g class="link">
+                        <path d="M20,100L140,30" style="marker-end: url(&quot;#end-arrow&quot;);" id="41" class="link"> </path>
+                        <path d="M20,100L140,30" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#41"><tspan dy="-5">5</tspan></textPath></text>
+                      </g>
+                      <!-- edge s-v2 -->
+                      <g class="link">
+                        <path d="M20,100L135,165" style="marker-end: url(&quot;#end-arrow&quot;);" id="42" class="link"> </path>
+                        <path d="M20,100L135,165" class="halo"> </path>
+                        <text><textPath startOffset="50%" xlink:href="#42"><tspan dy="-5">5</tspan></textPath></text>
+                      </g>
+                      <!-- edge v2-v4 -->
+                      <g class="link">
+                        <path d="M160,170L305,170" style="marker-end: url(&quot;#end-arrow&quot;);" id="34" class="link"> </path>
+                        <path d="M160,170L305,170" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#34"><tspan dy="-5">3</tspan></textPath></text>
+                      </g>
+                      <!-- edge v2-v1 -->
+                      <g class="link">
+                        <path d="M150,170L150,35" style="marker-end: url(&quot;#end-arrow&quot;);" id="45" class="link"> </path>
+                        <path d="M150,170L150,45" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#35"><tspan dy="-5">3</tspan></textPath></text>
+                      </g>
+                      <!-- edge v3-v2 -->
+                      <g class="link">
+                        <path d="M320,20L160,160" style="marker-end: url(&quot;#end-arrow&quot;);" id="47" class="link"> </path>
+                        <path d="M320,20L160,160" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#47"><tspan dy="-5">5</tspan></textPath></text>
+                      </g>
+                      <!-- edge v3-t -->
+                      <g class="link">
+                        <path d="M332,25L465,95" style="marker-end: url(&quot;#end-arrow&quot;);" id="48" class="link"> </path>
+                        <path d="M332,25L465,95" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#48"><tspan dy="-5">5</tspan></textPath></text>
+                      </g>
+                   </g>
+                   <g>
+                     <!-- Source Node -->
+                     <g transform="translate(20,100)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">s</text>
+                     </g>
+                     <!-- Target Node -->
+                     <g transform="translate(480,100)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">t</text>
+                     </g>
+                     <!-- v1 Node -->
+                     <g transform="translate(150,20)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v1</text>
+                     </g>
+                     <!-- v2 Node -->
+                     <g transform="translate(150,170)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v2</text>
+                     </g>
+                     <!-- v3 Node -->
+                     <g transform="translate(320,20)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v3</text>
+                     </g>
+                     <!-- v4 Node -->
+                     <g transform="translate(320,170)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v4</text>
+                     </g>
+                   </g>
+                 </svg>
+               </div>
+
+               <p> We then create a new graph containing all the original edges but with their directions reversed.  Each of these edges contain weights equal to 
+                   the current flow rates.  Any edges that have a weight of zero can be removed.
+
+               <div class="svg-container">
+                 <svg height="200" width="500" class="editor">
+                   <defs>
+                      <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                         <path d="M0,-5L10,0L0,5"> </path>
+                      </marker>
+                   </defs>
+                   <path style="" d="M58,80L527,80" class="link dragline hidden"></path>
+                   <g>
+                      <!-- edge 1-s -->
+                      <g class="link">
+                        <path d="M150,20L30,90" style="marker-end: url(&quot;#end-arrow&quot;);" id="51" class="link"> </path>
+                        <path d="M150,20L30,90" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#51"><tspan dy="-5">11</tspan></textPath></text>
+                      </g>
+                      <!-- edge v2-s -->
+                      <g class="link">
+                        <path d="M135,165L35,105" style="marker-end: url(&quot;#end-arrow&quot;);" id="52" class="link"> </path>
+                        <path d="M135,165L35,105" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#52"><tspan dy="-5">8</tspan></textPath></text>
+                      </g>
+                      <!-- edge v3-v1 -->
+                      <g class="link">
+                        <path d="M305,20L165,20" style="marker-end: url(&quot;#end-arrow&quot;);" id="53" class="link"> </path>
+                        <path d="M305,20L165,20" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#53"><tspan dy="-5">12</tspan></textPath></text>
+                      </g>
+                      <!-- edge v4-v2 -->
+                      <g class="link">
+                        <path d="M305,170L165,170" style="marker-end: url(&quot;#end-arrow&quot;);" id="54" class="link"> </path>
+                        <path d="M305,170L165,170" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#54"><tspan dy="-5">11</tspan></textPath></text>
+                      </g>
+                      <!-- edge v1-v2 -->
+                      <g class="link">
+                        <path d="M150,30L150,155" style="marker-end: url(&quot;#end-arrow&quot;);" id="55" class="link"> </path>
+                        <path d="M150,30L150,155" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#55"><tspan dy="-5">1</tspan></textPath></text>
+                      </g>
+                      <!-- edge v3-v4 -->
+                      <g class="link">
+                        <path d="M320,30L320,155" style="marker-end: url(&quot;#end-arrow&quot;);" id="56" class="link"> </path>
+                        <path d="M320,30L320,155" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#56"><tspan dy="-5">7</tspan></textPath></text>
+                      </g>
+                      <!-- edge v2-v3 -->
+                      <g class="link">
+                        <path d="M155,165L310,30" style="marker-end: url(&quot;#end-arrow&quot;);" id="57" class="link"> </path>
+                        <path d="M155,165L310,30" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#57"><tspan dy="-5">4</tspan></textPath></text>
+                      </g>
+                      <!-- edge t-v3 -->
+                      <g class="link">
+                        <path d="M470,95L335,25" style="marker-end: url(&quot;#end-arrow&quot;);" id="58" class="link"> </path>
+                        <path d="M470,95L335,25" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#58"><tspan dy="-5">15</tspan></textPath></text>
+                      </g>
+                      <!-- edge t-v4 -->
+                      <g class="link">
+                        <path d="M470,105L335,165" style="marker-end: url(&quot;#end-arrow&quot;);" id="59" class="link"> </path>
+                        <path d="M470,105L335,165" class="halo"></path>
+                        <text><textPath startOffset="50%" xlink:href="#59"><tspan dy="-5">4</tspan></textPath></text>
+                      </g>
+                   </g>
+                   <g>
+                     <!-- Source Node -->
+                     <g transform="translate(20,100)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">s</text>
+                     </g>
+                     <!-- Target Node -->
+                     <g transform="translate(480,100)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">t</text>
+                     </g>
+                     <!-- v1 Node -->
+                     <g transform="translate(150,20)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v1</text>
+                     </g>
+                     <!-- v2 Node -->
+                     <g transform="translate(150,170)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v2</text>
+                     </g>
+                     <!-- v3 Node -->
+                     <g transform="translate(320,20)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v3</text>
+                     </g>
+                     <!-- v4 Node -->
+                     <g transform="translate(320,170)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">v4</text>
+                     </g>
+                   </g>
+                 </svg>
+               </div>
+
+               <p>These two graphs are then merged together to produce the <strong>Residual Graph</strong></p>
+
+               <h3 id="augmentingpath">Augmenting Paths</h3>
+               <p> Augmenting path is any path from the source to the sink that can currently take more flow. The method for finding an augmenting path is the key
+                   behavior of the Edmonds-Karp Algorithm.  The Edmonds-Karp algorithm uses a Breadth First Search (BFS) to find the augmenting path.  The classic
+                   algorithm called Ford-Fulkerson uses a Depth First Search (DFS) to find the augmenting path.  Over the course of the algorithm, 
+                   flow is monotonically increased. There are instances where a path from the source to the sink can take on more flow, and that is an augmenting path.
+               </p>
+               <p>The Residual Network contains all potential flow changes.  Every edge in the network is represented in the Residual Network at lease once.
+                  Any directed path from source to sink in the Residual Network means we improve the solution.  Once we find an augmenting path, we find the
+                  smallest weight on that path and use that value to increase the flow.  This value is added to edges in the Flow Network if the edge in the
+                  Residual Graph is a forward edge.  This value is subtracted from edges in the Flow Network if the edge is the Residual Graph is a backward edge.
+                  We then regenerate the Residual Graph and repeat until we no longer find an augmenting path. 
+               </p>
+
+               <h3 id="edmondskarp">Edmonds-Karp Algorithm</h3>
+               <p>The Edmonds-Karp Algorithm is based upon the the <a href="https://en.wikipedia.org/wiki/Ford–Fulkerson_algorithm">Ford-Fulkerson Algorithm</a>. 
+                  The two algorithms are identical, except for how they search for an augmenting path. In Edmonds-Karp, the augmenting path is found using the 
+                  Breadth First Search (BFS) algorithm. In Ford-Fulkerson, the augmenting path is found using the Depth First Search (DFS) algorithm.</p>
+
+               <h3 id="pseudocode">Algorithm Pseudocode</h3>
+               <pre>
+               <strong>inputs</strong>
+                  capacityMatrix[n x n] : Capacity Matrix
+                  adjMatrix[n x n]      : Adjacency Matrix
+                  src                   : Source
+                  target                : sink or target
+               <strong>output</strong> 
+                  maxFlow               : Maximum Flow Rate
+
+               <strong>Edmonds-Karp:</strong>
+                  maxFlow = 0             // Initialize the flow to 0
+                  residualMatrix[n x n]   // The residual capacity array
+  
+                  while true:
+                    min, augmentPath = BFS(capacityMatrix, adjMatrix, source, target, residualMatrix)
+      
+                    if m = 0:
+                      break
+                   
+                    maxFlow = maxFlow + min
+                   
+                    // Walk the augmenting path 
+                    v = target
+                    while v != src:
+                      u = P[v] 
+                      residualMatrix[u,v] = residualMatrix[u,v] - min // Reduce the residual capacity            
+                      residualMatrix[v,u] = residualMatrix[v,u] + min // Increase the residual capacity of reverse edges 
+                      v = u
+
+                  return maxFlow 
+               </pre>
+
+               <p> This pseudo-code starts with the maximum flow initially set to 0. 
+                   The while loop executes until there are no more augmenting paths.
+                   Within the while loop, we call BFS to find the shortest path from source to sink and the minimum residual capacity along that path, min.
+                   We then walk the augmenting path from target to source.  Using the minium residual capacity, we reduce all residual capacities on the 
+                   augmenting path by min and increase the residual capacities on the reverse edges (representing the flow). 
+
+               <h3 id="complexity">Complexity Analysis</h3>
+               <p>The Edmonds-Karp algorithm runs in 
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>O</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>V</mi>
+                          <msup>
+                            <mi>E</mi>
+                            <mrow class="MJX-TeXAtom-ORD">
+                              <mn>2</mn>
+                            </mrow>
+                          </msup>
+                          <mo>)</mo>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </p>
+               <p>In each iteration of the algorithm, the shortest path (BFS) between the source and all other vertices must increase monotonically.  
+                  We need to prove that one iteration of the Edmonds-Karp algorithm is bounded by
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>O</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>E</mi>
+                          <mo>)</mo>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+                 .  We then need to prove that the number of iterations of the algorithm to find the maximum flow of a network is bounded by
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>O</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>VE</mi>
+                          <mo>)</mo>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+
+                 iterations.  Proving these two parts will show that Edmonds-Karp is bounded by 
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>O</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>V</mi>
+                          <msup>
+                            <mi>E</mi>
+                            <mrow class="MJX-TeXAtom-ORD">
+                              <mn>2</mn>
+                            </mrow>
+                          </msup>
+                          <mo>)</mo>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+                .
+              </p>
+              <p><strong>Proof:</strong></p>
+              <p><em>Part 1:</em> Show that the shortest path between source and all other vertices in the residual graph must increase monotonically.</p>
+              <p>This is a proof by <strong>contradiction</strong>.</p>
+              <p>Consider a flow augmentation that causes the shortest path to decrease.  Let f be the flow before such an augmentation and f' is the flow just after.
+                 There must exist a vertex, v, such that: </p>
+              <div class="math">
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                  <mstyle displaystyle="true">
+                    <mrow class="MJX-TeXAtom-ORD">
+                      <mi>d</mi>
+                      <mi>i</mi>
+                      <mi>s</mi>
+                      <mi>t</mi>
+                      <mi>a</mi>
+                      <mi>n</mi>
+                      <mi>c</mi>
+                      <msub>
+                        <mi>e</mi>
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <msup>
+                            <mi>f</mi>
+                            <mrow class="MJX-TeXAtom-ORD">
+                              <msup>
+                                <mi></mi>
+                                <mo>&#x2032;</mo>
+                              </msup>
+                            </mrow>
+                          </msup>
+                        </mrow>
+                      </msub>
+                      <mrow>
+                        <mo>(</mo>
+                        <mi>s</mi>
+                        <mo>,</mo>
+                        <mi>v</mi>
+                        <mo>)</mo>
+                      </mrow>
+                      <mo>&lt;</mo>
+                      <mi>d</mi>
+                      <mi>i</mi>
+                      <mi>s</mi>
+                      <mi>t</mi>
+                      <mi>a</mi>
+                      <mi>n</mi>
+                      <mi>c</mi>
+                      <msub>
+                        <mi>e</mi>
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <mi>f</mi>
+                        </mrow>
+                      </msub>
+                      <mrow>
+                        <mo>(</mo>
+                        <mi>s</mi>
+                        <mo>,</mo>
+                        <mi>v</mi>
+                        <mo>)</mo>
+                      </mrow>
+                    </mrow>
+                  </mstyle>
+                </math>
+              </div>
+              <p>Now, suppose there is a shortest path from s to v that has to travel through vertex u in the residual graph.  Let's assume the shortest
+                 path from s to v is 1 more the shortest path from s to u:</p>
+                <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>u</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>=</mo>
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>v</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>&#x2212;<!-- − --></mo>
+                        <mn>1</mn>
+                      </mrow>
+                    </mstyle>
+                  </math>
+                </div>
+                <p>The shortest path from s to u did not decrease with the new flow as result of how we choose v, therefore:
+                <div class = "math">
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>d</mi>
+                         <mi>i</mi>
+                         <mi>s</mi>
+                         <mi>t</mi>
+                         <mi>a</mi>
+                         <mi>n</mi>
+                         <mi>c</mi>
+                         <msub>
+                           <mi>e</mi>
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <msup>
+                               <mi>f</mi>
+                               <mrow class="MJX-TeXAtom-ORD">
+                                 <msup>
+                                   <mi></mi>
+                                   <mo>&#x2032;</mo>
+                                 </msup>
+                               </mrow>
+                             </msup>
+                           </mrow>
+                         </msub>
+                         <mrow>
+                           <mo>(</mo>
+                           <mi>s</mi>
+                           <mo>,</mo>
+                           <mi>u</mi>
+                           <mo>)</mo>
+                         </mrow>
+                         <mo>&#x2265;<!-- ≥ --></mo>
+                         <mi>d</mi>
+                         <mi>i</mi>
+                         <mi>s</mi>
+                         <mi>t</mi>
+                         <mi>a</mi>
+                         <mi>n</mi>
+                         <mi>c</mi>
+                         <msub>
+                           <mi>e</mi>
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <mi>f</mi>
+                           </mrow>
+                         </msub>
+                         <mrow>
+                           <mo>(</mo>
+                           <mi>s</mi>
+                           <mo>,</mo>
+                           <mi>u</mi>
+                           <mo>)</mo>
+                         </mrow>
+                       </mrow>
+                     </mstyle>
+                   </math>
+                </div>
+                <p>However, the edge (u,v) can not exist in the residual graph.  Assuming we are using integer edge lengths,
+                   the following relationships would exist if the edge existed:
+                   <ol>
+                      <li>
+                          <p>
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mstyle displaystyle="true">
+                                  <mrow class="MJX-TeXAtom-ORD">
+                                    <mi>d</mi>
+                                    <mi>i</mi>
+                                    <mi>s</mi>
+                                    <mi>t</mi>
+                                    <mi>a</mi>
+                                    <mi>n</mi>
+                                    <mi>c</mi>
+                                    <msub>
+                                      <mi>e</mi>
+                                      <mrow class="MJX-TeXAtom-ORD">
+                                        <mi>f</mi>
+                                      </mrow>
+                                    </msub>
+                                    <mrow>
+                                      <mo>(</mo>
+                                      <mi>s</mi>
+                                      <mo>,</mo>
+                                      <mi>v</mi>
+                                      <mo>)</mo>
+                                    </mrow>
+                                    <mo>&#x2264;<!-- ≤ --></mo>
+                                    <mi>d</mi>
+                                    <mi>i</mi>
+                                    <mi>s</mi>
+                                    <mi>t</mi>
+                                    <mi>a</mi>
+                                    <mi>n</mi>
+                                    <mi>c</mi>
+                                    <msub>
+                                      <mi>e</mi>
+                                      <mrow class="MJX-TeXAtom-ORD">
+                                        <mi>f</mi>
+                                      </mrow>
+                                    </msub>
+                                    <mrow>
+                                      <mo>(</mo>
+                                      <mi>s</mi>
+                                      <mo>,</mo>
+                                      <mi>u</mi>
+                                      <mo>)</mo>
+                                    </mrow>
+                                    <mo>+</mo>
+                                    <mn>1</mn>
+                                  </mrow>
+                                </mstyle>
+                              </math>
+                              (triangle inequality) 
+                            </p>
+                      </li>
+                      <li>
+                          <p>
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                               <mstyle displaystyle="true">
+                                 <mrow class="MJX-TeXAtom-ORD">
+                                   <mi>d</mi>
+                                   <mi>i</mi>
+                                   <mi>s</mi>
+                                   <mi>t</mi>
+                                   <mi>a</mi>
+                                   <mi>n</mi>
+                                   <mi>c</mi>
+                                   <msub>
+                                     <mi>e</mi>
+                                     <mrow class="MJX-TeXAtom-ORD">
+                                       <mi>f</mi>
+                                     </mrow>
+                                   </msub>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>s</mi>
+                                     <mo>,</mo>
+                                     <mi>v</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                   <mo>&#x2264;<!-- ≤ --></mo>
+                                   <mi>d</mi>
+                                   <mi>i</mi>
+                                   <mi>s</mi>
+                                   <mi>t</mi>
+                                   <mi>a</mi>
+                                   <mi>n</mi>
+                                   <mi>c</mi>
+                                   <msub>
+                                     <mi>e</mi>
+                                     <mrow class="MJX-TeXAtom-ORD">
+                                       <msup>
+                                         <mi>f</mi>
+                                         <mrow class="MJX-TeXAtom-ORD">
+                                           <msup>
+                                             <mi></mi>
+                                             <mo>&#x2032;</mo>
+                                           </msup>
+                                         </mrow>
+                                       </msup>
+                                     </mrow>
+                                   </msub>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>s</mi>
+                                     <mo>,</mo>
+                                     <mi>u</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                   <mo>+</mo>
+                                   <mn>1</mn>
+                                 </mrow>
+                               </mstyle>
+                             </math>
+                             (shortest path decreases with f')
+                          </p>
+                      </li>
+                      <li>
+                          <p>
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                               <mstyle displaystyle="true">
+                                 <mrow class="MJX-TeXAtom-ORD">
+                                   <mi>d</mi>
+                                   <mi>i</mi>
+                                   <mi>s</mi>
+                                   <mi>t</mi>
+                                   <mi>a</mi>
+                                   <mi>n</mi>
+                                   <mi>c</mi>
+                                   <msub>
+                                     <mi>e</mi>
+                                     <mrow class="MJX-TeXAtom-ORD">
+                                       <mi>f</mi>
+                                     </mrow>
+                                   </msub>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>s</mi>
+                                     <mo>,</mo>
+                                     <mi>v</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                   <mo>&#x2264;<!-- ≤ --></mo>
+                                   <mi>d</mi>
+                                   <mi>i</mi>
+                                   <mi>s</mi>
+                                   <mi>t</mi>
+                                   <mi>a</mi>
+                                   <mi>n</mi>
+                                   <mi>c</mi>
+                                   <msub>
+                                     <mi>e</mi>
+                                     <mrow class="MJX-TeXAtom-ORD">
+                                       <msup>
+                                         <mi>f</mi>
+                                         <mrow class="MJX-TeXAtom-ORD">
+                                           <msup>
+                                             <mi></mi>
+                                             <mo>&#x2032;</mo>
+                                           </msup>
+                                         </mrow>
+                                       </msup>
+                                     </mrow>
+                                   </msub>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>s</mi>
+                                     <mo>,</mo>
+                                     <mi>v</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                 </mrow>
+                               </mstyle>
+                             </math>
+                             (the relationship between (s,u) and (s,v)
+                          </p>
+                      </li>
+                   </ol>
+                   The third relationship would be violated. The shortest path did not decrease with flow f'.  A contradiction. 
+                </p>
+                <p><strong>Recap:</strong><br>The shortest path increases monontonically in the residual graph.  Therefore the length of one iteration is bounded
+                   in Edmonds-Karp to O(E).
+                </p>
+                <p><em>Part 2:</em> Show the bound on the number of iterations that Edmonds-Karp must perform to find maximum flow.</p>
+                <p>Let's define some terminolgy first:<p> 
+                <p><strong>Critical Edge:</strong> is an edge on the augmenting path whose residual capacity equals the residual capacity of the path.<br></p>
+                <p>Given an augmenting path with a critical edge, the critical edge's capacity will be filled by this augmenting path.  Once this happens, the
+                   edge will be removed from the residual network.  This proof will show that each edge of the graph's edge set can be critical at most
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mfrac>
+                           <mrow>
+                             <mo>|</mo>
+                             <mi>V</mi>
+                             <mo>|</mo>
+                           </mrow>
+                           <mn>2</mn>
+                         </mfrac>
+                       </mrow>
+                     </mstyle>
+                   </math> 
+                  times.
+               </p>
+               <p> Let an edge in the graph be defined by the vertices u and v.  Furthermore, let s be the source node in the graph.
+                   Now, when the edge is first considered to be critical, then the distance realtionship becomes:
+               </P>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>d</mi>
+                         <mi>i</mi>
+                         <mi>s</mi>
+                         <mi>t</mi>
+                         <mi>a</mi>
+                         <mi>n</mi>
+                         <mi>c</mi>
+                         <msub>
+                           <mi>e</mi>
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <mi>f</mi>
+                           </mrow>
+                         </msub>
+                         <mrow>
+                           <mo>(</mo>
+                           <mi>s</mi>
+                           <mo>,</mo>
+                           <mi>v</mi>
+                           <mo>)</mo>
+                         </mrow>
+                         <mo>=</mo>
+                         <mi>d</mi>
+                         <mi>i</mi>
+                         <mi>s</mi>
+                         <mi>t</mi>
+                         <mi>a</mi>
+                         <mi>n</mi>
+                         <mi>c</mi>
+                         <msub>
+                           <mi>e</mi>
+                           <mrow class="MJX-TeXAtom-ORD">
+                             <mi>f</mi>
+                           </mrow>
+                         </msub>
+                         <mrow>
+                           <mo>(</mo>
+                           <mi>s</mi>
+                           <mo>,</mo>
+                           <mi>u</mi>
+                           <mo>)</mo>
+                         </mrow>
+                         <mo>+</mo>
+                         <mn>1</mn>
+                       </mrow>
+                     </mstyle>
+                   </math>
+               </div>
+               <p>When the flow is augmented, the edge (u,v) will disappear in the residual network. Now, for it to reappear,
+                  the flow from u to v must be decreased.  This can only occur if the edge (v,u) appears on the augmenting path.
+                  Let f', be the flow when this situation occurs.
+               </p>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>u</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>=</mo>
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>v</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>+</mo>
+                        <mn>1</mn>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <p>From the proof in <em>Part 1</em>, we have the relationship of (s,u) and (s,v) defined by 
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <mi>f</mi>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>v</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>&#x2264;<!-- ≤ --></mo>
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>v</mi>
+                          <mo>)</mo>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+                  .  We can then perform substitions to get:
+               </p>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>u</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>&#x2265;<!-- ≥ --></mo>
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <mi>f</mi>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>v</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>+</mo>
+                        <mn>1</mn>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <p>
+               Now, during the time that edge (u,v) first became critical to when the it became critical again, the distance between the source and u
+               increases by at least 2.
+               </p>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <msup>
+                              <mi>f</mi>
+                              <mrow class="MJX-TeXAtom-ORD">
+                                <msup>
+                                  <mi></mi>
+                                  <mo>&#x2032;</mo>
+                                </msup>
+                              </mrow>
+                            </msup>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>u</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>&#x2265;<!-- ≥ --></mo>
+                        <mi>d</mi>
+                        <mi>i</mi>
+                        <mi>s</mi>
+                        <mi>t</mi>
+                        <mi>a</mi>
+                        <mi>n</mi>
+                        <mi>c</mi>
+                        <msub>
+                          <mi>e</mi>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <mi>f</mi>
+                          </mrow>
+                        </msub>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>s</mi>
+                          <mo>,</mo>
+                          <mi>v</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>+</mo>
+                        <mn>2</mn>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <p>The itermediate vertices on the shortest path from s to u cannot contain vertices s, u, or t.
+                  Therefore, the distance to vertex u is at most
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                         <mrow>
+                           <mo>|</mo>
+                           <mi>V</mi>
+                           <mo>|</mo>
+                         </mrow>
+                         <mo>&#x2212;<!-- − --></mo>
+                         <mn>2</mn>
+                       </mrow>
+                     </mstyle>
+                   </math>
+                   .  Since the distance from the source increases by <strong>at least 2</strong> every time an edge becomes critical, the edge (u,v) can become
+                   critical at most
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mfrac>
+                           <mrow>
+                             <mrow>
+                               <mo>|</mo>
+                               <mi>V</mi>
+                               <mo>|</mo>
+                             </mrow>
+                             <mo>&#x2212;<!-- − --></mo>
+                             <mn>2</mn>
+                           </mrow>
+                           <mn>2</mn>
+                         </mfrac>
+                       </mrow>
+                     </mstyle>
+                   </math>
+                   times.  An edge can become critical at most
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>O</mi>
+                         <mrow>
+                           <mo>(</mo>
+                           <mo>|</mo>
+                           <mi>V</mi>
+                           <mo>|</mo>
+                           <mo>)</mo>
+                         </mrow>
+                       </mrow>
+                     </mstyle>
+                   </math> 
+                   times.  Now, there are a total of
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>O</mi>
+                         <mrow>
+                           <mo>(</mo>
+                           <mo>|</mo>
+                           <mi>E</mi>
+                           <mo>|</mo>
+                           <mo>)</mo>
+                         </mrow>
+                       </mrow>
+                     </mstyle>
+                   </math> 
+                   edges.  Therefore, the number of iterations that Edmonds-Karp must go through is
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>O</mi>
+                         <mrow>
+                           <mo>(</mo>
+                           <mo>|</mo>
+                           <mi>V</mi>
+                           <mo>|</mo>
+                           <mo>|</mo>
+                           <mi>E</mi>
+                           <mo>|</mo>
+                           <mo>)</mo>
+                         </mrow>
+                       </mrow>
+                     </mstyle>
+                   </math>
+                   .
+                   </p>
+                   <p><strong>Conclusion:</strong></p>
+                   <p>Now that we proved the bound on the number of iterations and the bound on each iteration, we get an overall time complexity of
+                      <math xmlns="http://www.w3.org/1998/Math/MathML">
+                        <mstyle displaystyle="true">
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <mi>O</mi>
+                            <mrow>
+                              <mo>(</mo>
+                              <mrow>
+                                <mo>|</mo>
+                                <mi>V</mi>
+                                <mo>|</mo>
+                              </mrow>
+                              <mrow>
+                                <mo>|</mo>
+                                <msup>
+                                  <mi>E</mi>
+                                  <mrow class="MJX-TeXAtom-ORD">
+                                    <mn>2</mn>
+                                  </mrow>
+                                </msup>
+                                <mo>|</mo>
+                              </mrow>
+                              <mo>)</mo>
+                           </mrow>
+                        </mrow>
+                     </mstyle>
+                  </math>
+                 .
+              </p>
+          </div>
+        </article>
+    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="js/toc.js"> </script>
+     </div>
+  </body>
+</html>

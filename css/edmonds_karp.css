@@ -1,0 +1,189 @@
+/* MENU */
+
+.dropdownmenu ul, .dropdownmenu li {
+	margin: 0;
+	padding: 0;
+}
+.dropdownmenu ul {
+	background: gray;
+	list-style: none;
+	width: 100%;
+}
+.dropdownmenu li {
+	float: left;
+	position: relative;
+	width:auto;
+}
+.dropdownmenu a {
+	background: #30A6E6;
+	color: #FFFFFF;
+	display: block;
+	font: bold 12px/20px sans-serif;
+	padding: 10px 25px;
+	text-align: center;
+	text-decoration: none;
+	-webkit-transition: all .25s ease;
+	-moz-transition: all .25s ease;
+	-ms-transition: all .25s ease;
+	-o-transition: all .25s ease;
+	transition: all .25s ease;
+}
+.dropdownmenu li:hover a {
+	background: #000000;
+}
+#submenu {
+	left: 0;
+	opacity: 0;
+	position: absolute;
+	top: 35px;
+	visibility: hidden;
+	z-index: 1;
+}
+li:hover ul#submenu {
+	opacity: 1;
+	top: 40px;	/* adjust this as per top nav padding top & bottom comes */
+	visibility: visible;
+}
+#submenu li {
+	float: none;
+	width: 100%;
+}
+#submenu a:hover {
+	background: #DF4B05;
+}
+#submenu a {
+	background-color:#000000;
+}
+
+/* === Shared === */
+a {
+  color: steelblue;
+}
+#app-container {
+  text-align: center;
+  text-rendering: geometricPrecision;
+}
+
+.control_label {
+  text-align: center;
+  display:block;
+  margin: auto;
+  color: blue;
+}
+
+textarea {
+  text-align: center;
+  display:block;
+  margin: auto;
+}
+textarea.dialog {
+  height: 2em;
+}
+textarea.transcribe {
+  text-align: left;
+  display: block;
+  margin: auto;
+  width: 80%;
+  height: 1em;
+}
+.transbtncontainer, .solvebtncontainer {
+  display:table;
+  margin:auto;
+}
+.maxflow {
+  text-align: center;
+  display:block;
+  margin:auto;
+}
+
+text {
+  font: 13px sans-serif;
+  pointer-events: none;
+}
+
+
+/* SVG Elements */
+svg {
+  background-color: #FFF;
+  cursor: default;
+  border: solid;
+  border-width: 1px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.node {
+  text-anchor: middle;
+}
+.node circle {
+  stroke-width: 1.5px;
+}
+
+.link text {
+  text-anchor: middle;
+  dominant-baseline: text-after-edge;
+}
+path.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 2px;
+}
+
+/* === Editor === */
+svg.editor:not(.active):not(.ctrl) {
+  cursor: crosshair;
+}
+
+.editor .node circle {
+  cursor: pointer;
+}
+.editor .node.selected circle {
+  stroke-width: 2.5px;
+}
+
+.editor .link {
+  cursor: pointer;
+}
+.editor .link .halo {
+  stroke-width: 15px !important;
+  stroke: transparent !important;
+}
+.editor path.selected.link {
+  stroke-dasharray: 10,2;
+}
+
+/* Dragline */
+.editor path.hidden.link {
+  stroke-width: 0;
+}
+.editor path.dragline.link {
+  pointer-events: none;
+}
+
+/* === Show Steps === */
+.link.sending path {
+  stroke-width: 3px;
+  stroke: steelblue;
+}
+.link.resending path {
+  stroke-width: 3px;
+  stroke: brown;
+}
+.link.sending path{
+  stroke-width: 3px;
+  stroke: steelblue;
+}
+.link.sending {
+  fill: steelblue;
+}
+.link.resending {
+  fill: brown;
+}
+
+.bold {
+  font-weight:bold;
+}
