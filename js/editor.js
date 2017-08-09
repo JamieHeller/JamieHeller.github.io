@@ -758,9 +758,7 @@ function createEditor() {
 
   // Enable the listeners
   d3.select(window)
-    .onKey('backspace/del', removeObject)
-    .on('touchstart', nozoom)
-    .on('touchmove', nozoom);
+    .onKey('backspace/del', removeObject);
 
   // This function is used to allow touch screens to interact with the flow network
   function nozoom() {
@@ -772,7 +770,9 @@ function createEditor() {
   //-----------------------
   svg.on('mousedown', mousedown)
      .on('mousemove', mousemove)
-     .on('mouseup', mouseup);
+     .on('mouseup', mouseup)
+     .on('touchstart', nozoom)
+     .on('touchmove', nozoom);
 
   d3.select(window)
      .on('keydown', keydown)
