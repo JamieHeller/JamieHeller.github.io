@@ -760,7 +760,7 @@ function createEditor() {
   d3.select(window)
     .onKey('backspace/del', removeObject)
     .on('touchstart', nozoom)
-    .on('touchmove', nozoom)
+    .on('touchmove', nozoom);
 
   // This function is used to allow touch screens to interact with the flow network
   function nozoom() {
