@@ -323,11 +323,21 @@ function createEditor() {
   var tmpNodes = [
       {id: 0, name: 's', fixed: true, x: (percentile), y: height/2},
       {id: 1, name: 't', fixed: true, x: (width-percentile), y: height/2},
-      {id: 2, name: 'a'}
+      {id: 2, name: 'v1'},
+      {id: 3, name: 'v2'},
+      {id: 4, name: 'v3'},
+      {id: 5, name: 'v4'}
     ],
       tmpLinks = [
-      {source: tmpNodes[0], target: tmpNodes[2], capacity: 10},
-      {source: tmpNodes[2], target: tmpNodes[1], capacity: 5}
+      {source: tmpNodes[0], target: tmpNodes[2], capacity: 16},
+      {source: tmpNodes[2], target: tmpNodes[4], capacity: 12},
+      {source: tmpNodes[4], target: tmpNodes[1], capacity: 20},
+      {source: tmpNodes[0], target: tmpNodes[3], capacity: 13},
+      {source: tmpNodes[3], target: tmpNodes[5], capacity: 14},
+      {source: tmpNodes[5], target: tmpNodes[1], capacity: 4},
+      {source: tmpNodes[3], target: tmpNodes[2], capacity: 4},
+      {source: tmpNodes[4], target: tmpNodes[3], capacity: 9},
+      {source: tmpNodes[5], target: tmpNodes[4], capacity: 7}
     ];
  
   var networkGraph;
