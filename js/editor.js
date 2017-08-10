@@ -438,7 +438,6 @@ function createEditor() {
         else {selected_link = mousedown_link;}
         selected_node = null;
 
-        // JAH
         var capStr = "" + mousedown_link.capacity;
 
         objTypeValueLabel.text('Link');
@@ -599,7 +598,11 @@ function createEditor() {
         selected_link = link;
         selected_node = null;
         restart();
-      });
+      })
+     .on('touchstart', touchHandler, true)
+     .on('touchmove', touchHandler, true)
+     .on('touchend', touchEndHandler)
+     .on('touchcancel', touchHandler, true);
 
     // remove old nodes
     circle.exit().remove();
@@ -761,22 +764,19 @@ function createEditor() {
     .onKey('backspace/del', removeObject);
 
  
-  function touchHandler(event)
+  function touchHandler()
   {
-      var touches = event.changedTouches,
+      var touches = d3.event.changedTouches,
           first = touches[0],
           type = "";
-      switch(event.type)
+
+      switch(d3.event.type)
       {
           case "touchstart": type = "mousedown"; break;
           case "touchmove":  type = "mousemove"; break;        
           case "touchend":   type = "mouseup";   break;
           default:           return;
       }
-
-      // initMouseEvent(type, canBubble, cancelable, view, clickCount, 
-      //                screenX, screenY, clientX, clientY, ctrlKey, 
-      //                altKey, shiftKey, metaKey, button, relatedTarget);
 
       var simulatedEvent = document.createEvent("MouseEvent");
       simulatedEvent.initMouseEvent(type, true, true, window, 1, 
@@ -785,9 +785,71 @@ function createEditor() {
                                     false, false, false, 0/*left*/, null);
 
       first.target.dispatchEvent(simulatedEvent);
-      event.preventDefault();
+      d3.event.preventDefault();
   } // end touchHandler
  
+     function touchEndHandler() {
+        if(!mousedown_node) {return}
+ 
+        // needed by FF
+        drag_line.classed('hidden', true)
+          .style('marker-end', '');
+
+        // check for drag-to-self
+        
+        // First find out if the current x,y coord falls within one of the nodes
+        var nodes = networkGraph.nodes();
+        mouseup_node = mousedown_node;
+
+         var x = d3.mouse(this)[0],
+             y = d3.mouse(this)[1],
+             r = 0;
+
+        d3.selectAll("circle").each(function(d,i){
+           var elt = d3.select(this);
+           r = parseInt(elt.attr("r"));
+        });
+
+        nodes.forEach(function(d,i){
+         var cx = d.x,
+             cy = d.y;
+         if ((x <= (cx + r)) && (x >= (cx - r)) && (y <= (cy + r)) && (y >= (cy - r))) {
+             mouseup_node = d;        
+          }  
+ 
+        });
+
+        if(mouseup_node === mousedown_node) { resetMouseEventVars(); return; }
+
+        // unenlarge target node
+        d3.select(this).select('circle').transition().attr('transform', '');
+
+        // add link to graph (update if exists)
+        // NB: links are strictly source < target; arrows separately specified by booleans
+        var source = mousedown_node,
+            target = mouseup_node;
+
+        var link = networkGraph.addLink({source: source, target: target});
+
+        var capStr = "" + link.capacity;
+
+        objTypeValueLabel.text('Link');
+        objNameLabel.text("Capacity:");
+        objNameTextBox
+          .attr('disabled', null)
+          .attr('placeholder', capStr)
+          .text("");
+
+        deleteButton.attr('disabled', null);
+
+        // select new link
+        selected_link = link;
+        selected_node = null;
+        restart();
+        
+     }
+
+
   //----------------------- 
   // Start the force graph 
   //-----------------------
@@ -796,7 +858,7 @@ function createEditor() {
      .on('mouseup', mouseup)
      .on('touchstart', touchHandler, true)
      .on('touchmove', touchHandler, true)
-     .on('touchend', touchHandler, true)
+     .on('touchend', touchEndHandler, true)
      .on('touchcancel', touchHandler, true);
      
     
