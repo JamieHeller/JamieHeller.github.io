@@ -346,6 +346,10 @@ function createEditor() {
   }
   else {
     networkGraph = new Graph(tmpNodes, tmpLinks);
+     console.log(networkGraph.toJSON());
+     d3.json("graphs/default.json", function(data) {
+       networkGraph = new Graph(data[0], data[1]); 
+     });
   }
 
   // Initialize the D3 force layout
