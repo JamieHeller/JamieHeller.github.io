@@ -348,6 +348,7 @@ function createEditor() {
     networkGraph = new Graph(tmpNodes, tmpLinks);
   }
 
+
   // Initialize the D3 force layout
   var force = d3.layout.force()
       .nodes(networkGraph.nodes)
