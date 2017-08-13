@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="css/toc.css">
     <link rel="stylesheet" href="css/theory.css">
 
+    <!-- Need this to display equations properly in google chrome.  Google chrome dropped support for MathML -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=MML_HTMLorMML-full"></script>
   </head>
   <body>
      <nav class="dropdownmenu">
@@ -20,28 +22,40 @@
 
      <div class="container">
         <div class="top" >&nbsp;
-           <h1 align="center">Edmonds-Karp Algorithm</h1>
+           <h1 align="center">The Edmonds-Karp Algorithm</h1>
            <h2 align="center">Theory</h2>
        </div>
        <div class="content" id="theory">
          <article>
             <div class="algorithm-topics">
                <h3 id="introduction">Introduction</h3>
-               <p>The Edmonds-Karp Algorithm is a modified version of the Ford-Fulkerson algorithm.  
+               <p>The Edmonds-Karp Algorithm is an implementation of the Ford-Fulkerson method.  
                   Its purpose is to compute the maximum flow in a flow network.  The algorithm was
-                  published by Jack Edmonds and Richard Karp in 1972 in the paper entitle:</p>
+                  published by Jack Edmonds and Richard Karp in 1972 in the paper entitled:</p>
                   <a href="http://dx.doi.org/10.1145/321694.321699">
                     <em>Edmonds, Jack; Karp, Richard M. (1972). "Theoretical improvements in algorithmic efficiency for network flow problems". Journal of the ACM. Association for Computing Machinery. 19 (2): 248–264. doi:10.1145/321694.321699.</em></a>
-                  <p>The Edmonds-Karp Algorithm has a time complexity of: 
-                  <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mrow>
-                      <mi>O</mi><mfenced>
-				
-                      <msup><mi>V</mi><mn>2</mn></msup>
-                      <mi>E</mi></mfenced> 
-                    </mrow>
-                  </math>
+                <p>The Edmonds-Karp Algorithm has a time complexity of: 
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>O</mi>
+                         <mrow>
+                           <mo>(</mo>
+                           <msup>
+                             <mi>V</mi>
+                             <mrow class="MJX-TeXAtom-ORD">
+                               <mn>2</mn>
+                             </mrow>
+                           </msup>
+                           <mo>,</mo>
+                           <mi>E</mi>
+                           <mo>)</mo>
+                         </mrow>
+                       </mrow>
+                     </mstyle>
+                   </math>
                </p>
+
 
                <h3 id="flownetworks">Flow Network</h3>
                <p>A <strong>Flow Network</strong> is a directed graph, where each edge has a maximum flow <strong>capacity</strong>. 
@@ -78,7 +92,7 @@
                   </math>
                </div>
 
-               <p><strong>The Flow Network Problem:</strong></p>
+               <p><strong>The Network Flow Problem:</strong></p>
                <p>We are given:
                   <ul>
                      <li>A directed graph with each edge </li>
@@ -333,7 +347,7 @@
                    </p>
                </div>
 
-               <p><strong>Simplify</strong></p>
+               <p><strong>Observations and Simplifications:</strong></p>
                <p><em>Cycles:</em> If a cycle has flow on all edges, then we can get an equivalent solution with
                   <math xmlns="http://www.w3.org/1998/Math/MathML">
                     <mstyle displaystyle="true">
@@ -412,8 +426,8 @@
                </p>
 
                <strong>What does a Network Flow Diagram look like?</strong>
-               <p>The simplest of all Network Flow Diagram appears in the figure below.  There exists two nodes, a source node, labeled s, and a 
-                  sink node, labeled t.  The source and sink nodes are connected by a single edge.  The edge is labeled with the flow rate on that edge 
+               <p>The simplest of all Network Flow Diagram appears in the figure below.  There exist two nodes, a source, labeled s, and a 
+                  sink, labeled t.  The source and sink nodes are connected by a single edge.  The edge is labeled with the flow rate on that edge 
                   and the maximum flow capacity allowed across that edge.  In this example, the flow rate is 0 and the maximum capacity of the link is 1 and is
                    represented in the form 0/1.
                </p>
@@ -512,8 +526,8 @@
                
                <p><strong>Proof:</strong></p>
                <p> Let G = (V, E) be a directed graph with s=source node and t=sink node of G respectively.</p>
-               <p> Now consider the calculated flow=f for G by Edmonds-Karp Algorithm.  In the residual graph (rG) that is calculated from G after the
-                   final flow assignment is generated by the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
+               <p> Now consider the calculated flow=f for G by the Edmonds-Karp Algorithm.  In the residual graph (rG) that is calculated from G after the
+                   final flow assignment is generated by the the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
                    <ol> 
                       <li> A: the set of vertices reachable from s in rG </li>
                       <li> B: the set of remaining vertices.  In other words, B = V − A </li>
@@ -585,7 +599,7 @@
            
                <h3 id="residualgraph">Residual Graph</h3>
                <p>The residual graph is a tool used in the maximum flow calculations that helps us determine how much you can change in the original graph.
-                  The following diagram represents the graph at a specific iteration of the maximum flow algorithm. </p>
+                  The following diagram represents the graph at a specific iteration of the maximum flow calcuations. </p>
 
                <div class="svg-container">
                  <svg height="200" width="500" class="editor">
@@ -877,8 +891,8 @@
                <p>These two graphs are then merged together to produce the <strong>Residual Graph</strong></p>
 
                <h3 id="augmentingpath">Augmenting Paths</h3>
-               <p> Augmenting path is any path from the source to the sink that can currently take more flow. The method for finding an augmenting path is the key
-                   behavior of the Edmonds-Karp Algorithm.  The Edmonds-Karp algorithm uses a Breadth First Search (BFS) to find the augmenting path.  The classic
+               <p> An Augmenting path is any path from the source to the sink that can currently take more flow. The method for finding an augmenting path is the key
+                   feature of the Edmonds-Karp Algorithm.  The Edmonds-Karp algorithm uses a Breadth First Search (BFS) to find the augmenting path.  The classic
                    algorithm called Ford-Fulkerson uses a Depth First Search (DFS) to find the augmenting path.  Over the course of the algorithm, 
                    flow is monotonically increased. There are instances where a path from the source to the sink can take on more flow, and that is an augmenting path.
                </p>
@@ -889,9 +903,9 @@
                   We then regenerate the Residual Graph and repeat until we no longer find an augmenting path. 
                </p>
 
-               <h3 id="edmondskarp">Edmonds-Karp Algorithm</h3>
+               <h3 id="edmondskarp">The Edmonds-Karp Algorithm</h3>
                <p>The Edmonds-Karp Algorithm is based upon the the <a href="https://en.wikipedia.org/wiki/Ford–Fulkerson_algorithm">Ford-Fulkerson Algorithm</a>. 
-                  The two algorithms are identical, except for how they search for an augmenting path. In Edmonds-Karp, the augmenting path is found using the 
+                  The two algorithms are identical, except for how they search for an augmenting path. In the Edmonds-Karp, the augmenting path is found using the 
                   Breadth First Search (BFS) algorithm. In Ford-Fulkerson, the augmenting path is found using the Depth First Search (DFS) algorithm.</p>
 
                <h3 id="pseudocode">Algorithm Pseudocode</h3>
@@ -904,7 +918,7 @@
                <strong>output</strong> 
                   maxFlow               : Maximum Flow Rate
 
-               <strong>Edmonds-Karp:</strong>
+               <strong>The Edmonds-Karp:</strong>
                   maxFlow = 0             // Initialize the flow to 0
                   residualMatrix[n x n]   // The residual capacity array
   
@@ -927,7 +941,7 @@
                   return maxFlow 
                </pre>
 
-               <p> This pseudo-code starts with the maximum flow initially set to 0. 
+               <p> This algorithm code starts with the maximum flow initially set to 0. 
                    The while loop executes until there are no more augmenting paths.
                    Within the while loop, we call BFS to find the shortest path from source to sink and the minimum residual capacity along that path, min.
                    We then walk the augmenting path from target to source.  Using the minium residual capacity, we reduce all residual capacities on the 
@@ -982,7 +996,7 @@
                     </mstyle>
                   </math>
 
-                 iterations.  Proving these two parts will show that Edmonds-Karp is bounded by 
+                 iterations.  Proving these two parts implies that the Edmonds-Karp algorithm is bounded by 
                   <math xmlns="http://www.w3.org/1998/Math/MathML">
                     <mstyle displaystyle="true">
                       <mrow class="MJX-TeXAtom-ORD">
@@ -1004,9 +1018,9 @@
                 .
               </p>
               <p><strong>Proof:</strong></p>
-              <p><em>Part 1:</em> Show that the shortest path between source and all other vertices in the residual graph must increase monotonically.</p>
+              <p><em>Part 1:</em> Show that the for every vertex, v, the length of the shortest path from source to v must increase.</p>
               <p>This is a proof by <strong>contradiction</strong>.</p>
-              <p>Consider a flow augmentation that causes the shortest path to decrease.  Let f be the flow before such an augmentation and f' is the flow just after.
+              <p>Consider a flow augmentation that causes the shortest path to decrease.  Let f be the flow before such an augmentation and let f' be the flow just after.
                  There must exist a vertex, v, such that: </p>
               <div class="math">
                 <math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -1375,9 +1389,9 @@
                    The third relationship would be violated. The shortest path did not decrease with flow f'.  A contradiction. 
                 </p>
                 <p><strong>Recap:</strong><br>The shortest path increases monontonically in the residual graph.  Therefore the length of one iteration is bounded
-                   in Edmonds-Karp to O(E).
+                   in the Edmonds-Karp algorithm to O(E).
                 </p>
-                <p><em>Part 2:</em> Show the bound on the number of iterations that Edmonds-Karp must perform to find maximum flow.</p>
+                <p><em>Part 2:</em> Show the bound on the number of iterations that the Edmonds-Karp algorithm must perform to find maximum flow.</p>
                 <p>Let's define some terminolgy first:<p> 
                 <p><strong>Critical Edge:</strong> is an edge on the augmenting path whose residual capacity equals the residual capacity of the path.<br></p>
                 <p>Given an augmenting path with a critical edge, the critical edge's capacity will be filled by this augmenting path.  Once this happens, the
@@ -1768,7 +1782,7 @@
                        </mrow>
                      </mstyle>
                    </math> 
-                   edges.  Therefore, the number of iterations that Edmonds-Karp must go through is
+                   edges.  Therefore, the number of iterations that the Edmonds-Karp algorithm must go through is
                    <math xmlns="http://www.w3.org/1998/Math/MathML">
                      <mstyle displaystyle="true">
                        <mrow class="MJX-TeXAtom-ORD">
