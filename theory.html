@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Network Flow Theory using Edmonds-Karp Algorithm</title>
+    <title>Flow Network Theory using Edmonds-Karp Algorithm</title>
     <link rel="stylesheet" href="css/edmonds_karp.css">
     <link rel="stylesheet" href="css/toc.css">
     <link rel="stylesheet" href="css/theory.css">
@@ -92,16 +92,19 @@
                   </math>
                </div>
 
-               <p><strong>The Network Flow Problem:</strong></p>
+               <p><strong>The Flow Network Problem:</strong></p>
                <p>We are given:
                   <ul>
-                     <li>A directed graph with each edge </li>
-                     <li>Edges with capacity limits</li>
+                     <li>A directed graph with a set of edges and vertices </li>
+                     <li>A source vertex capable of providing infinite flow </li>
+                     <li>A target/sink vertex that we wish to measure the maximum flow output </li>
+                     <li>Every edge has a capacity limit</li>
                   </ul>
                </p>
-               <p><strong>Goal:</strong> We want to find the actual flow through the network so that we maximize the output at the sink node.</p>
+               <p><strong>Goal:</strong> We want to find the actual flow through the network so that we maximize the output at the sink node.
+                  Let S be the source node, T be the target/sink node, and v be some vertex.</p>
                <div class="math">
-                  <p>Flow Valve = 
+                  <p>Flow Value = 
                      <math xmlns="http://www.w3.org/1998/Math/MathML">
                        <mstyle displaystyle="true">
                          <mrow class="MJX-TeXAtom-ORD">
@@ -171,7 +174,13 @@
                           <mi>y</mi>
                           <mo>)</mo>
                         </mrow>
-                        <mo>=</mo>
+                        <mtext>&#xA0;</mtext>
+                        <mi>e</mi>
+                        <mi>q</mi>
+                        <mi>u</mi>
+                        <mi>a</mi>
+                        <mi>l</mi>
+                        <mtext>&#xA0;</mtext>
                         <mi>c</mi>
                         <mi>a</mi>
                         <mi>p</mi>
@@ -220,7 +229,13 @@
                           <mi>y</mi>
                           <mo>)</mo>
                         </mrow>
-                        <mo>=</mo>
+                        <mtext>&#xA0;</mtext>
+                        <mi>e</mi>
+                        <mi>q</mi>
+                        <mi>u</mi>
+                        <mi>a</mi>
+                        <mi>l</mi>
+                        <mtext>&#xA0;</mtext>
                         <mi>a</mi>
                         <mi>c</mi>
                         <mi>t</mi>
@@ -348,15 +363,8 @@
                </div>
 
                <p><strong>Observations and Simplifications:</strong></p>
-               <p><em>Cycles:</em> If a cycle has flow on all edges, then we can get an equivalent solution with
-                  <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mstyle displaystyle="true">
-                      <mrow class="MJX-TeXAtom-ORD">
-                        <mo>&#x2265;<!-- ≥ --></mo>
-                      </mrow>
-                    </mstyle>
-                  </math> 
-                 edges having zero flow.  Why send product (flow) in a cycle with positive flow.<br>
+               <p><em>Cycles:</em> If a cycle has flow on all edges, then we can get an equivalent solution with greater than or equal to
+                 one of the edges having zero flow.  Why send product (flow) in a cycle with positive flow?<br>
                  Notice: Any edge
                  <math xmlns="http://www.w3.org/1998/Math/MathML">
                    <mstyle displaystyle="true">
@@ -392,7 +400,7 @@
                  </math> 
                </p>
 
-               <p><em>Sinks:</em> Any vertex, other than our target sink node, which contain <strong>only</strong> incoming edges can be removed.
+               <p><em>Sinks:</em> Any vertex, other than our target sink node, which contains <strong>only</strong> incoming edges can be removed.
                   In this circumstance flow would never make it to the target node.
                </p>
 
@@ -425,8 +433,8 @@
                </ul>
                </p>
 
-               <strong>What does a Network Flow Diagram look like?</strong>
-               <p>The simplest of all Network Flow Diagram appears in the figure below.  There exist two nodes, a source, labeled s, and a 
+               <strong>What does a Flow Network Diagram look like?</strong>
+               <p>The simplest of all Flow Network Diagrams appears in the figure below.  There exist two nodes, a source, labeled s, and a 
                   sink, labeled t.  The source and sink nodes are connected by a single edge.  The edge is labeled with the flow rate on that edge 
                   and the maximum flow capacity allowed across that edge.  In this example, the flow rate is 0 and the maximum capacity of the link is 1 and is
                    represented in the form 0/1.
@@ -466,7 +474,7 @@
                   </svg>
                </div>
              
-               <p>In this Network Flow Diagram, there exists only one edge with a capacity of 1 from the source node to the target node.
+               <p>In this Flow Network Diagram, there exists only one edge with a capacity of 1 from the source node to the target node.
                   The maximum flow is equal to the minimum cut through the Flow Network, which can easily be seen to have a value of 1.
                </p>
 
@@ -521,13 +529,13 @@
                
                <p>A s-t cut partitions the vertices, V, of a graph into two sets, S and T, where the source node 
                <span class="texhtml"><i>s</i> ∈ <i>S</i></span> and the sink or target node <span class="texhtml"><i>t</i> ∈ <i>T</i></span>.
-               Furthermore the the cut set contains all edges that cross from a node in set S to a node in set T.  A <strong>minimum cut-set</strong>
-               is a s-t cut whose capacity is minimal.</p>
+               Furthermore the cut set contains all edges that cross from a node in set S to a node in set T.  </p>
+               <p><strong>Claim</strong>: A <em>minimum cut-set</em> is a s-t cut whose capacity is minimal.</p>
                
                <p><strong>Proof:</strong></p>
                <p> Let G = (V, E) be a directed graph with s=source node and t=sink node of G respectively.</p>
                <p> Now consider the calculated flow=f for G by the Edmonds-Karp Algorithm.  In the residual graph (rG) that is calculated from G after the
-                   final flow assignment is generated by the the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
+                   final flow assignment is generated by the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
                    <ol> 
                       <li> A: the set of vertices reachable from s in rG </li>
                       <li> B: the set of remaining vertices.  In other words, B = V − A </li>
@@ -576,7 +584,7 @@
                     </mstyle>
                   </math>
                </div>
-               <p>Given that the flow out from the subset A - flow in from the subset A equals the flow for any subset of vertices, A.  We need the value of
+               <p>Given that the flow out from the subset A minus the flow in from the subset A equals the flow for any subset of vertices, A.  We need the value of
                   f = c(A, B) to be:
                   <ul>
                       <li> All outgoing edges from the cut to be fully saturated. </li>
@@ -586,17 +594,25 @@
                <p>Let's consider the following cases:
                   <ul>
                      <li>In graph G, there exists an outgoing edge (x,y) and x is a member of subset A and y is a member of subset B.  Let this edge not be saturated.
-                         If this is the case, then there must exist a <strong>forward edge</strong> from x to y in rG.  This implies there is a path from s to y in rG,
+                         If this is the case, then there must exist a <strong>forward edge</strong> from x to y in rG.  This implies there is a path from S to y in rG,
                          which is a <strong>contradiction</strong>.  Therefore, all outgoing edges are fully saturated.
                      </li>
                      <li>In graph G, there exists an incoming edge (y,x) and x is a member of subset A and y is a member of subset B.  Let this edge carry some
                           non-zero flow.  If this is the case, then ther must exist a <strong>backward edge</strong> from x to y in rG.  This implies there is a
-                          path from s to y in rG, which is a <strong>contradiction</strong>.  Therefore, all incoming edges must have zero flow.
+                          path from S to y in rG, which is a <strong>contradiction</strong>.  Therefore, all incoming edges must have zero flow.
                      </li>
                   </ul>
                   <strong>In conclusion:</strong> The capacity of the cut obtained from the description above is equal to the flow obtained in the network. 
                </p>
-           
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>&#x25FB;<!-- ◻ --></mi>
+                       </mrow>
+                     </mstyle>
+                   </math> 
+               </p>
+
                <h3 id="residualgraph">Residual Graph</h3>
                <p>The residual graph is a tool used in the maximum flow calculations that helps us determine how much you can change in the original graph.
                   The following diagram represents the graph at a specific iteration of the maximum flow calcuations. </p>
@@ -702,7 +718,7 @@
 
                <p>The residual graph is constructed by creating a new graph with identical edges to the original graph.  The weights on the edges in 
                   this graph represent the residual capacity available on each edge at the current instance of time during the maximum flow calculations.
-                  The residual flow is simply the edge capacity - the edge flow.  Edges with an edge capcity equal to 0 can be elimnated from the graph.
+                  The residual flow is simply the edge capacity minus the edge flow.  Edges with an edge capcity equal to 0 can be elimnated from the graph.
                 </p>
 
                <div class="svg-container">
@@ -892,9 +908,9 @@
 
                <h3 id="augmentingpath">Augmenting Paths</h3>
                <p> An Augmenting path is any path from the source to the sink that can currently take more flow. The method for finding an augmenting path is the key
-                   feature of the Edmonds-Karp Algorithm.  The Edmonds-Karp algorithm uses a Breadth First Search (BFS) to find the augmenting path.  The classic
-                   algorithm called Ford-Fulkerson uses a Depth First Search (DFS) to find the augmenting path.  Over the course of the algorithm, 
-                   flow is monotonically increased. There are instances where a path from the source to the sink can take on more flow, and that is an augmenting path.
+                   feature of the Edmonds-Karp Algorithm.  The Edmonds-Karp algorithm uses a Breadth First Search (BFS) to find the augmenting path. 
+                   Over the course of the algorithm, flow is monotonically increased. There are instances where a path from the source to the sink can take on more
+                   flow, and that is an augmenting path.
                </p>
                <p>The Residual Network contains all potential flow changes.  Every edge in the network is represented in the Residual Network at lease once.
                   Any directed path from source to sink in the Residual Network means we improve the solution.  Once we find an augmenting path, we find the
@@ -904,9 +920,10 @@
                </p>
 
                <h3 id="edmondskarp">The Edmonds-Karp Algorithm</h3>
-               <p>The Edmonds-Karp Algorithm is based upon the the <a href="https://en.wikipedia.org/wiki/Ford–Fulkerson_algorithm">Ford-Fulkerson Algorithm</a>. 
-                  The two algorithms are identical, except for how they search for an augmenting path. In the Edmonds-Karp, the augmenting path is found using the 
-                  Breadth First Search (BFS) algorithm. In Ford-Fulkerson, the augmenting path is found using the Depth First Search (DFS) algorithm.</p>
+               <p>The Edmonds-Karp Algorithm is a specific implementation of the <a href="https://en.wikipedia.org/wiki/Ford–Fulkerson_algorithm">Ford-Fulkerson 
+                  method</a>.  In particular, Edmonds-Karp algorithm implements the searching for an augmenting path using the 
+                  Breadth First Search (BFS) algorithm. Other implementations of the Ford-Fulkerson method use the Depth First Search (DFS) algorithm to find
+                  augmenting paths.</p>
 
                <h3 id="pseudocode">Algorithm Pseudocode</h3>
                <pre>
