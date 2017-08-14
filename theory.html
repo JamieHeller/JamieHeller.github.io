@@ -417,207 +417,186 @@
                </p>
 
 
-               <h3 id="maxflowmincut">Maximum Flow and Minimum Cut</h3>
-               <strong>Theorem</strong>
-               <div class="theorem">
-                 <p>
-                 <a href=https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem>maximum-flow minimum-cut theorem</a> states that The maximum flow through 
-                 any network from a given source to a given sink is exactly the sum of the edge weights that, if removed, would totally disconnect the 
-                 source from the sink.</p> 
-               </div>
-
-               <br><strong>So what is a flow?</strong>
-               <p>A flow can be anything.
-               <ul>
-                 <li>It could be data that passes through an Information Technology (IT) network.</li> 
-                 <li>It could be packages that need to be shipped from source to destination.</li>
-                 <li>It could be automobiles traveling through a network of roads.</li>
-               </ul>
-               </p>
-
-               <strong>What does a Flow Network Diagram look like?</strong>
-               <p>The simplest of all Flow Network Diagrams appears in the figure below.  There exist two nodes, a source, labeled s, and a 
-                  sink, labeled t.  The source and sink nodes are connected by a single edge.  The edge is labeled with the flow rate on that edge 
-                  and the maximum flow capacity allowed across that edge.  In this example, the flow rate is 0 and the maximum capacity of the link is 1 and is
-                   represented in the form 0/1.
-               </p>
- 
-               <!-- Figure 1 -->
-               <div class="svg-container">
-                 <svg height="160" width="580" class="editor">
-                   <defs>
-                      <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
-                         <path d="M0,-5L10,0L0,5"> </path>
-                      </marker>
-                   </defs>
-                     <path style="" d="M58,80L527,81.19999694824219" class="link dragline hidden"></path>
-                     <g>
-                        <g class="link">
-                          <path d="M70,80L505,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="10" class="link"> </path>
-                          <path d="M70,80L505,80" class="halo"></path>
-                          <text><textPath startOffset="50%" xlink:href="#10"><tspan dy="-5">0 / 1</tspan></textPath></text>
-                        </g>
-                        <g class="link">
-                          <path d="M400,40L400,120" id="11" class="link"></path>
-                          <path d="M400,40L400,120" class="halo"></path>
-                          <text><textPath startOffset="30%" xlink:href="#11"><tspan dy="-5">Cut</tspan></textPath></text>
-                        </g>
-                     </g>
-                     <g>
-                       <g transform="translate(58,80)" class="node">
-                          <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
-                          <text class="id" y="4">s</text>
-                       </g>
-                       <g transform="translate(522,80)" class="node">
-                          <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
-                          <text class="id" y="4">t</text>
-                       </g>
-                    </g>
-                  </svg>
-               </div>
-             
-               <p>In this Flow Network Diagram, there exists only one edge with a capacity of 1 from the source node to the target node.
-                  The maximum flow is equal to the minimum cut through the Flow Network, which can easily be seen to have a value of 1.
-               </p>
-
-               <p>The next simple example adds a node in between the source and target with no direct link from source to target.  This means the
-                  the flow must travel through this node to get to the target.  We can then demonstrate the minimum cut is still 1 in this example since
-                  the edge from a to t produces the smallest cut that separates the source from the target.
-
-               <!-- Figure 2 -->
-               <div class="svg-container">
-                 <svg height="160" width="580" class="editor">
-                   <defs>
-                     <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
-                        <path d="M0,-5L10,0L0,5"></path></marker>
-                   </defs>
-                   <path style="" d="M290,80L290,80" class="link dragline hidden"></path>
-                   <g>
-                     <!-- Link from s to a -->
-                     <g class="link">
-                       <path d="M70,80L275,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="20" class="link"></path>
-                       <path d="M70,80L275,80" class="halo"></path>
-                       <text><textPath startOffset="50%" xlink:href="#20"><tspan dy="-5">0 / 2</tspan></textPath></text>
-                     </g>
-                     <!-- Link from a to t -->
-                     <g class="link">
-                       <path d="M300,80L505,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="21" class="link"></path>
-                       <path d="M300,80L505,80" class="halo"></path>
-                       <text><textPath startOffset="50%" xlink:href="#21"><tspan dy="-5">0 / 1</tspan></textPath></text>
-                     </g>
-                     <!-- The smallest cut -->
-                     <g class="link">
-                       <path d="M450,40L450,120" id="22" class="link"></path>
-                       <path d="M450,40L4500,120" class="halo"></path>
-                       <text><textPath startOffset="30%" xlink:href="#22"><tspan dy="-5">Cut</tspan></textPath></text>
-                     </g>
-                   </g>
-                   <g>
-                     <g transform="translate(58,80)" class="node">
-                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
-                        <text class="id" y="4">s</text>
-                     </g>
-                     <g transform="translate(522,80)" class="node">
-                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
-                        <text class="id" y="4">t</text>
-                     </g>
-                     <g transform="translate(290,80)" class="node">
-                        <circle style="fill: rgb(255, 152, 150); stroke: rgb(178, 106, 105);" r="12"></circle>
-                        <text class="id" y="4">a</text>
-                     </g>
-                   </g>
-                 </svg>
-               </div>
-               
-               <p>A s-t cut partitions the vertices, V, of a graph into two sets, S and T, where the source node 
-               <span class="texhtml"><i>s</i> ∈ <i>S</i></span> and the sink or target node <span class="texhtml"><i>t</i> ∈ <i>T</i></span>.
-               Furthermore the cut set contains all edges that cross from a node in set S to a node in set T.  </p>
-               <p><strong>Claim</strong>: A <em>minimum cut-set</em> is a s-t cut whose capacity is minimal.</p>
-               
-               <p><strong>Proof:</strong></p>
-               <p> Let G = (V, E) be a directed graph with s=source node and t=sink node of G respectively.</p>
-               <p> Now consider the calculated flow=f for G by the Edmonds-Karp Algorithm.  In the residual graph (rG) that is calculated from G after the
-                   final flow assignment is generated by the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
-                   <ol> 
-                      <li> A: the set of vertices reachable from s in rG </li>
-                      <li> B: the set of remaining vertices.  In other words, B = V − A </li>
-                   </ol>
-               </p>
-               <p><strong>Claim:</strong> f = c(A, B), where the flow is equal to the capacity of the s-t cut.</p>
-               <div class="math">
-                  <math xmlns="http://www.w3.org/1998/Math/MathML">
-                    <mstyle displaystyle="true">
-                      <mrow class="MJX-TeXAtom-ORD">
-                        <mi>c</mi>
-                        <mrow>
-                          <mo>(</mo>
-                          <mi>S</mi>
-                          <mo>,</mo>
-                          <mi>T</mi>
-                          <mo>)</mo>
-                        </mrow>
-                        <mo>=</mo>
-                        <munder>
-                          <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
-                          <mrow class="MJX-TeXAtom-ORD">
-                            <mrow>
-                              <mo>(</mo>
-                              <mi>u</mi>
-                              <mo>,</mo>
-                              <mi>v</mi>
-                              <mo>)</mo>
-                            </mrow>
-                            <mo>&#x2208;<!-- ∈ --></mo>
-                            <mi>S</mi>
-                            <mi>x</mi>
-                            <mi>T</mi>
-                          </mrow>
-                        </munder>
-                        <mrow class="MJX-TeXAtom-ORD">
-                          <msub>
-                            <mi>c</mi>
-                            <mrow class="MJX-TeXAtom-ORD">
-                              <mi>u</mi>
-                              <mi>v</mi>
-                            </mrow>
-                          </msub>
-                        </mrow>
-                      </mrow>
-                    </mstyle>
-                  </math>
-               </div>
-               <p>Given that the flow out from the subset A minus the flow in from the subset A equals the flow for any subset of vertices, A.  We need the value of
-                  f = c(A, B) to be:
-                  <ul>
-                      <li> All outgoing edges from the cut to be fully saturated. </li>
-                      <li> All incoming edges to the cut to have zero flow. </li>
-                  </ul>
-               </p>
-               <p>Let's consider the following cases:
-                  <ul>
-                     <li>In graph G, there exists an outgoing edge (x,y) and x is a member of subset A and y is a member of subset B.  Let this edge not be saturated.
-                         If this is the case, then there must exist a <strong>forward edge</strong> from x to y in rG.  This implies there is a path from S to y in rG,
-                         which is a <strong>contradiction</strong>.  Therefore, all outgoing edges are fully saturated.
-                     </li>
-                     <li>In graph G, there exists an incoming edge (y,x) and x is a member of subset A and y is a member of subset B.  Let this edge carry some
-                          non-zero flow.  If this is the case, then ther must exist a <strong>backward edge</strong> from x to y in rG.  This implies there is a
-                          path from S to y in rG, which is a <strong>contradiction</strong>.  Therefore, all incoming edges must have zero flow.
-                     </li>
-                  </ul>
-                  <strong>In conclusion:</strong> The capacity of the cut obtained from the description above is equal to the flow obtained in the network. 
-               </p>
-                   <math xmlns="http://www.w3.org/1998/Math/MathML">
-                     <mstyle displaystyle="true">
-                       <mrow class="MJX-TeXAtom-ORD">
-                         <mi>&#x25FB;<!-- ◻ --></mi>
-                       </mrow>
-                     </mstyle>
-                   </math> 
-               </p>
-
                <h3 id="residualgraph">Residual Graph</h3>
-               <p>The residual graph is a tool used in the maximum flow calculations that helps us determine how much you can change in the original graph.
-                  The following diagram represents the graph at a specific iteration of the maximum flow calcuations. </p>
+               <p>The residual graph is a tool used in the maximum flow calculations that helps us determine how much you can change in the original graph.</p>
+               <p><strong>Definition:</strong> Given a network 
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                      <mstyle displaystyle="true">
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <mi>G</mi>
+                          <mo>=</mo>
+                          <mrow>
+                            <mo>(</mo>
+                            <mi>V</mi>
+                            <mo>,</mo>
+                            <mi>E</mi>
+                            <mo>)</mo>
+                          </mrow>
+                        </mrow>
+                      </mstyle>
+                    </math>
+                    and a flow f, the <em>residual graph</em 
+                    <math xmlns="http://www.w3.org/1998/Math/MathML">
+                      <mstyle displaystyle="true">
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <mi>r</mi>
+                          <mi>G</mi>
+                          <mo>=</mo>
+                          <mrow>
+                            <mo>(</mo>
+                            <msup>
+                              <mi>V</mi>
+                              <mo>&#x2032;</mo>
+                            </msup>
+                            <mo>,</mo>
+                            <msup>
+                              <mi>E</mi>
+                              <mo>&#x2032;</mo>
+                            </msup>
+                            <mo>)</mo>
+                          </mrow>
+                        </mrow>
+                      </mstyle>
+                    </math>
+                    of graph G with respect to the flow f is:
+                    <ul>
+                        <li> V' = V </li>
+                        <li> <strong>Forward Edges:</strong> For each edge
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                               <mstyle displaystyle="true">
+                                 <mrow class="MJX-TeXAtom-ORD">
+                                   <mi>e</mi>
+                                   <mo>&#x2208;<!-- ∈ --></mo>
+                                   <mi>E</mi>
+                                 </mrow>
+                               </mstyle>
+                             </math>
+                             with
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                               <mstyle displaystyle="true">
+                                 <mrow class="MJX-TeXAtom-ORD">
+                                   <mi>f</mi>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>e</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                   <mo>&#x003C;<!-- < --></mo>
+                                   <mi>c</mi>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>e</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                 </mrow>
+                               </mstyle>
+                             </math>
+                             , 
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                               <mstyle displaystyle="true">
+                                 <mrow class="MJX-TeXAtom-ORD">
+                                   <mi>e</mi>
+                                   <mo>&#x2208;<!-- ∈ --></mo>
+                                   <msup>
+                                     <mi>E</mi>
+                                     <mo>&#x2032;</mo>
+                                   </msup>
+                                 </mrow>
+                               </mstyle>
+                             </math>
+                             with capacity 
+                             <math xmlns="http://www.w3.org/1998/Math/MathML">
+                               <mstyle displaystyle="true">
+                                 <mrow class="MJX-TeXAtom-ORD">
+                                   <mi>c</mi>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>e</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                   <mo>&#x2212;<!-- − --></mo>
+                                   <mi>f</mi>
+                                   <mrow>
+                                     <mo>(</mo>
+                                     <mi>e</mi>
+                                     <mo>)</mo>
+                                   </mrow>
+                                 </mrow>
+                               </mstyle>
+                             </math>
+                             .
+                         </li> 
+                         <li>
+                              <strong>Backward Edges:</strong> For each edge
+                              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mstyle displaystyle="true">
+                                  <mrow class="MJX-TeXAtom-ORD">
+                                    <mi>e</mi>
+                                    <mo>=</mo>
+                                    <mrow>
+                                      <mo>(</mo>
+                                      <mi>u</mi>
+                                      <mo>,</mo>
+                                      <mi>v</mi>
+                                      <mo>)</mo>
+                                    </mrow>
+                                    <mo>&#x2208;<!-- ∈ --></mo>
+                                    <mi>E</mi>
+                                  </mrow>
+                                </mstyle>
+                              </math>
+                              with 
+                              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mstyle displaystyle="true">
+                                  <mrow class="MJX-TeXAtom-ORD">
+                                    <mi>f</mi>
+                                    <mrow>
+                                      <mo>(</mo>
+                                      <mi>e</mi>
+                                      <mo>)</mo>
+                                    </mrow>
+                                    <mo>&#x003E;<!-- > --></mo>
+                                    <mn>0</mn>
+                                  </mrow>
+                                </mstyle>
+                              </math>
+                              ,
+                              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mstyle displaystyle="true">
+                                  <mrow class="MJX-TeXAtom-ORD">
+                                    <mrow>
+                                      <mo>(</mo>
+                                      <mi>v</mi>
+                                      <mo>,</mo>
+                                      <mi>u</mi>
+                                      <mo>)</mo>
+                                    </mrow>
+                                    <mo>&#x2208;<!-- ∈ --></mo>
+                                    <msup>
+                                      <mi>E</mi>
+                                      <mo>&#x2032;</mo>
+                                    </msup>
+                                  </mrow>
+                                </mstyle>
+                              </math>
+                              with capacity
+                              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                                <mstyle displaystyle="true">
+                                  <mrow class="MJX-TeXAtom-ORD">
+                                    <mi>f</mi>
+                                    <mrow>
+                                      <mo>(</mo>
+                                      <mi>e</mi>
+                                      <mo>)</mo>
+                                    </mrow>
+                                  </mrow>
+                                </mstyle>
+                              </math>
+                              .
+                         </li>
+                    </ul> 
+                  The following diagram represents the graph at a specific iteration of the maximum flow calcuations. 
+                  Each edge is annotated with the flow/capacity values.</p>
 
                <div class="svg-container">
                  <svg height="200" width="500" class="editor">
@@ -920,6 +899,205 @@
                   Residual Graph is a forward edge.  This value is subtracted from edges in the Flow Network if the edge is the Residual Graph is a backward edge.
                   We then regenerate the Residual Graph and repeat until we no longer find an augmenting path. 
                </p>
+
+               <h3 id="maxflowmincut">Maximum Flow and Minimum Cut</h3>
+               <strong>Theorem</strong>
+               <div class="theorem">
+                 <p>
+                 <a href=https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem>maximum-flow minimum-cut theorem</a> states that The maximum flow through 
+                 any network from a given source to a given sink is exactly the sum of the edge weights that, if removed, would totally disconnect the 
+                 source from the sink.</p> 
+               </div>
+
+               <br><strong>So what is a flow?</strong>
+               <p>A flow can be anything.
+               <ul>
+                 <li>It could be data that passes through an Information Technology (IT) network.</li> 
+                 <li>It could be packages that need to be shipped from source to destination.</li>
+                 <li>It could be automobiles traveling through a network of roads.</li>
+               </ul>
+               </p>
+
+               <strong>What does a Flow Network Diagram look like?</strong>
+               <p>The simplest of all Flow Network Diagrams appears in the figure below.  There exist two nodes, a source, labeled s, and a 
+                  sink, labeled t.  The source and sink nodes are connected by a single edge.  The edge is labeled with the flow rate on that edge 
+                  and the maximum flow capacity allowed across that edge.  In this example, the flow rate is 0 and the maximum capacity of the link is 1 and is
+                   represented in the form 0/1.
+               </p>
+ 
+               <!-- Figure 1 -->
+               <div class="svg-container">
+                 <svg height="160" width="580" class="editor">
+                   <defs>
+                      <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                         <path d="M0,-5L10,0L0,5"> </path>
+                      </marker>
+                   </defs>
+                     <path style="" d="M58,80L527,81.19999694824219" class="link dragline hidden"></path>
+                     <g>
+                        <g class="link">
+                          <path d="M70,80L505,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="10" class="link"> </path>
+                          <path d="M70,80L505,80" class="halo"></path>
+                          <text><textPath startOffset="50%" xlink:href="#10"><tspan dy="-5">0 / 1</tspan></textPath></text>
+                        </g>
+                        <g class="link">
+                          <path d="M400,40L400,120" id="11" class="link"></path>
+                          <path d="M400,40L400,120" class="halo"></path>
+                          <text><textPath startOffset="30%" xlink:href="#11"><tspan dy="-5">Cut</tspan></textPath></text>
+                        </g>
+                     </g>
+                     <g>
+                       <g transform="translate(58,80)" class="node">
+                          <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                          <text class="id" y="4">s</text>
+                       </g>
+                       <g transform="translate(522,80)" class="node">
+                          <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                          <text class="id" y="4">t</text>
+                       </g>
+                    </g>
+                  </svg>
+               </div>
+             
+               <p>In this Flow Network Diagram, there exists only one edge with a capacity of 1 from the source node to the target node.
+                  The maximum flow is equal to the minimum cut through the Flow Network, which can easily be seen to have a value of 1.
+               </p>
+
+               <p>The next simple example adds a node in between the source and target with no direct link from source to target.  This means the
+                  the flow must travel through this node to get to the target.  We can then demonstrate the minimum cut is still 1 in this example since
+                  the edge from a to t produces the smallest cut that separates the source from the target.
+
+               <!-- Figure 2 -->
+               <div class="svg-container">
+                 <svg height="160" width="580" class="editor">
+                   <defs>
+                     <marker orient="auto" markerUnits="userSpaceOnUse" markerHeight="10" markerWidth="10" refX="6" viewBox="0 -5 10 10" id="end-arrow">
+                        <path d="M0,-5L10,0L0,5"></path></marker>
+                   </defs>
+                   <path style="" d="M290,80L290,80" class="link dragline hidden"></path>
+                   <g>
+                     <!-- Link from s to a -->
+                     <g class="link">
+                       <path d="M70,80L275,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="20" class="link"></path>
+                       <path d="M70,80L275,80" class="halo"></path>
+                       <text><textPath startOffset="50%" xlink:href="#20"><tspan dy="-5">0 / 2</tspan></textPath></text>
+                     </g>
+                     <!-- Link from a to t -->
+                     <g class="link">
+                       <path d="M300,80L505,80" style="marker-end: url(&quot;#end-arrow&quot;);" id="21" class="link"></path>
+                       <path d="M300,80L505,80" class="halo"></path>
+                       <text><textPath startOffset="50%" xlink:href="#21"><tspan dy="-5">0 / 1</tspan></textPath></text>
+                     </g>
+                     <!-- The smallest cut -->
+                     <g class="link">
+                       <path d="M450,40L450,120" id="22" class="link"></path>
+                       <path d="M450,40L4500,120" class="halo"></path>
+                       <text><textPath startOffset="30%" xlink:href="#22"><tspan dy="-5">Cut</tspan></textPath></text>
+                     </g>
+                   </g>
+                   <g>
+                     <g transform="translate(58,80)" class="node">
+                        <circle style="fill: rgb(31, 119, 180); stroke: rgb(21, 83, 125);" r="12"></circle>
+                        <text class="id" y="4">s</text>
+                     </g>
+                     <g transform="translate(522,80)" class="node">
+                        <circle style="fill: rgb(174, 199, 232); stroke: rgb(121, 139, 162);" r="12"></circle>
+                        <text class="id" y="4">t</text>
+                     </g>
+                     <g transform="translate(290,80)" class="node">
+                        <circle style="fill: rgb(255, 152, 150); stroke: rgb(178, 106, 105);" r="12"></circle>
+                        <text class="id" y="4">a</text>
+                     </g>
+                   </g>
+                 </svg>
+               </div>
+               
+               <p>A s-t cut partitions the vertices, V, of a graph into two sets, S and T, where the source node 
+               <span class="texhtml"><i>s</i> ∈ <i>S</i></span> and the sink or target node <span class="texhtml"><i>t</i> ∈ <i>T</i></span>.
+               Furthermore the cut set contains all edges that cross from a node in set S to a node in set T.  </p>
+               <p><strong>Claim</strong>: A <em>minimum cut-set</em> is a s-t cut whose capacity is minimal.</p>
+               
+               <p><strong>Proof:</strong></p>
+               <p> Let G = (V, E) be a directed graph with s=source node and t=sink node of G respectively.</p>
+               <p> Now consider the calculated flow=f for G by the Edmonds-Karp Algorithm.  In the residual graph (rG) that is calculated from G after the
+                   final flow assignment is generated by the Edmonds-Karp Algorithm, we can divide the vertices into two subsets:
+                   <ol> 
+                      <li> A: the set of vertices reachable from s in rG </li>
+                      <li> B: the set of remaining vertices.  In other words, B = V − A </li>
+                   </ol>
+               </p>
+               <p><strong>Claim:</strong> f = c(A, B), where the flow is equal to the capacity of the s-t cut.</p>
+               <div class="math">
+                  <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mstyle displaystyle="true">
+                      <mrow class="MJX-TeXAtom-ORD">
+                        <mi>c</mi>
+                        <mrow>
+                          <mo>(</mo>
+                          <mi>S</mi>
+                          <mo>,</mo>
+                          <mi>T</mi>
+                          <mo>)</mo>
+                        </mrow>
+                        <mo>=</mo>
+                        <munder>
+                          <mo movablelimits="false">&#x2211;<!-- ∑ --></mo>
+                          <mrow class="MJX-TeXAtom-ORD">
+                            <mrow>
+                              <mo>(</mo>
+                              <mi>u</mi>
+                              <mo>,</mo>
+                              <mi>v</mi>
+                              <mo>)</mo>
+                            </mrow>
+                            <mo>&#x2208;<!-- ∈ --></mo>
+                            <mi>S</mi>
+                            <mi>x</mi>
+                            <mi>T</mi>
+                          </mrow>
+                        </munder>
+                        <mrow class="MJX-TeXAtom-ORD">
+                          <msub>
+                            <mi>c</mi>
+                            <mrow class="MJX-TeXAtom-ORD">
+                              <mi>u</mi>
+                              <mi>v</mi>
+                            </mrow>
+                          </msub>
+                        </mrow>
+                      </mrow>
+                    </mstyle>
+                  </math>
+               </div>
+               <p>Given that the flow out from the subset A minus the flow in from the subset A equals the flow for any subset of vertices, A.  We need the value of
+                  f = c(A, B) to be:
+                  <ul>
+                      <li> All outgoing edges from the cut to be fully saturated. </li>
+                      <li> All incoming edges to the cut to have zero flow. </li>
+                  </ul>
+               </p>
+               <p>Let's consider the following cases:
+                  <ul>
+                     <li>In graph G, there exists an outgoing edge (x,y) and x is a member of subset A and y is a member of subset B.  Let this edge not be saturated.
+                         If this is the case, then there must exist a <strong>forward edge</strong> from x to y in rG.  This implies there is a path from S to y in rG,
+                         which is a <strong>contradiction</strong>.  Therefore, all outgoing edges are fully saturated.
+                     </li>
+                     <li>In graph G, there exists an incoming edge (y,x) and x is a member of subset A and y is a member of subset B.  Let this edge carry some
+                          non-zero flow.  If this is the case, then ther must exist a <strong>backward edge</strong> from x to y in rG.  This implies there is a
+                          path from S to y in rG, which is a <strong>contradiction</strong>.  Therefore, all incoming edges must have zero flow.
+                     </li>
+                  </ul>
+                  <strong>In conclusion:</strong> The capacity of the cut obtained from the description above is equal to the flow obtained in the network. 
+               </p>
+                   <math xmlns="http://www.w3.org/1998/Math/MathML">
+                     <mstyle displaystyle="true">
+                       <mrow class="MJX-TeXAtom-ORD">
+                         <mi>&#x25FB;<!-- ◻ --></mi>
+                       </mrow>
+                     </mstyle>
+                   </math> 
+               </p>
+
 
                <h3 id="edmondskarp">The Edmonds-Karp Algorithm</h3>
                <p>The Edmonds-Karp Algorithm is a specific implementation of the <a href="https://en.wikipedia.org/wiki/Ford–Fulkerson_algorithm">Ford-Fulkerson 
