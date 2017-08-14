@@ -139,6 +139,9 @@
     var source = link.source,
         target = link.target;
 
+    if (target == null) {
+          alert("undefined target");
+   }
     var previous = this.getLink(source, target);
 
     if (previous) {return previous}
@@ -190,13 +193,13 @@
     for (id in preres) {
       var es = preres[id];
 
-      id = parseInt(id.charAt(1));
-      ns.push({id: id});
+      var idVal = parseInt(id.substring(1));
+      ns.push({id: idVal});
 
       // No need to check for dupulicates
       es.forEach(function (e) {
         ls.push({
-          source: id,
+          source: idVal,
           target: parseInt(e.target),
           flow: e.flow
         });
@@ -208,6 +211,7 @@
       return JSON.parse( JSON.stringify(node) );
     });
 
+    // JAH: This is creating an undefined target in my links?
     ls = ls.map(function(e){
       var sourceId = e.source,
           targetId = e.target;
