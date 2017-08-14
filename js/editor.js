@@ -34,7 +34,6 @@ function createEditor() {
   // User Interface Stuff
   //-----------------------
 
-// JAH
   // Create a label area to report the maximum flow
   var maxFlowLabel = body.append('div')
      .attr('class', 'maxflow')
@@ -342,6 +341,7 @@ function createEditor() {
  
   var networkGraph;
   if (window.networkGraph) {
+    // Retains the graph between editor and step views
     networkGraph = Graph.fromJSON( window.networkGraph.toJSON() );
   }
   else {
