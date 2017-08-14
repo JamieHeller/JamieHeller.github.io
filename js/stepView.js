@@ -55,7 +55,7 @@ function stepView(){
   var svg = body.append('svg')
       .attr('class', 'steps')
       .attr('width', width)
-      .attr('height', height);
+      .attr('height', 3*height);
 
   // Create the definitions for links (arrows, etc)
   var defs = svg.append('svg:defs');
@@ -147,8 +147,51 @@ function stepView(){
   var flowCircle = flowG.append("g").selectAll("g");
 
   function residualTick() {
+    var fmax_x = 0.0;
+    var fmin_x = Number.MAX_SAFE_INTEGER;
+    var fmax_y = 0.0;
+    var fmin_y = Number.MAX_SAFE_INTEGER;
+    var rmax_x = 0.0;
+    var rmin_x = Number.MAX_SAFE_INTEGER;
+    var rmax_y = 0.0;
+    var rmin_y = Number.MAX_SAFE_INTEGER;
+ 
+
     residualPath.selectAll("path").attr("d", linkArc);
     residualCircle.attr("transform", transform);
+
+
+    flowCircle.each(function(d) {
+       if (d.x > fmax_x) fmax_x = d.x;
+       if (d.y > fmax_y) fmax_y = d.y;
+       if (d.x < fmin_x) fmin_x = d.x;
+       if (d.y < fmin_y) fmin_y = d.y;
+    });
+
+    residualCircle.each(function(d) {
+       if (d.x > rmax_x) rmax_x = d.x;
+       if (d.y > rmax_y) rmax_y = d.y;
+       if (d.x < rmin_x) rmin_x = d.x;
+       if (d.y < rmin_y) rmin_y = d.y;
+    });
+
+    // Translate the residual graph so it does not overlap with the flow graph
+    var padding = 40;
+    var x_offset = fmax_x - rmin_x + padding;
+    var y_offset = fmax_y - rmin_y + padding;
+
+    //var new_width = max_x + x_offset;
+   // var new_height = max_y + y_offset;
+    //new_height = new_height * 2;  // hack to just give me plenty of room to play with
+
+    // Resize the svg to fit the graph
+    //svg.attr("width", new_width);
+    //svg.attr("height", new_height);
+    //flowForce.attr("width", new_width/2);
+    //flowForce.attr("height", new_height/2);
+
+    residualG.attr("transform", "translate(0,"+ y_offset +")");
+
 
     function transform(d) {
       return "translate(" + d.x + "," + d.y + ")";
