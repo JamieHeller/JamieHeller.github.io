@@ -10,6 +10,13 @@
   text-align: center;
 }
 
+.proof {
+  background-color: #FFF;
+  cursor: default;
+  border: solid;
+  border-width: 1px;
+}
+
 .svg-container {
   text-align: center;
 }
